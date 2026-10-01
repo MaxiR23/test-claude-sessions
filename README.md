@@ -1,4 +1,4 @@
-# test-clause-sessions
+# test-claude-sessions
 
 Practice repository for learning how **Claude Code cloud sessions** work.
 
