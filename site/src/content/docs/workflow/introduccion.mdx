@@ -5,18 +5,11 @@ sidebar:
 description: El loop de agentes que lleva un issue de la idea al merge.
 ---
 
+import LoopFlow from '../../../components/LoopFlow.astro';
+
 El loop corre en una sesión en la nube de punta a punta, merge incluido. La sesión actúa como orquestadora: despacha cada etapa por nombre con una instrucción de una línea y no implementa nada.
 
-```text frame="terminal" title="etapas del loop"
-create-issue / refine-issue
-plan-issue
-implement-issue
-scripts/loop-path.sh
-review-changes
-verify-findings
-implement-issue (modo fix)
-ship
-```
+<LoopFlow />
 
 - **create-issue / refine-issue**: crean o completan el issue. Ver [Issues](/workflow/issues/).
 - **plan-issue**: escribe el plan, solo para issues no triviales. Ver [Plan e implementación](/workflow/plan-e-implementacion/).
