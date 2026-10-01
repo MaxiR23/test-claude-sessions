@@ -19,6 +19,14 @@ Rules for working in this repository. These are strict. Follow them exactly.
 - Write commit messages in English, imperative mood, lowercase description, no trailing period.
 - One logical change per commit.
 
+## Shipping
+
+- Branches, commits, pushes, and pull requests are done only through `scripts/ship.sh`.
+- Never run raw `git commit`, `git push`, or `gh pr create`.
+- Run `scripts/ship.sh prepare <issue> [path ...]` to create the branch and commit.
+- After `prepare`, write `.claude/loop/pr-<issue>.body.md` and wait for the owner's approval.
+- Only after approval, run `scripts/ship.sh publish <issue>` to push and open or update the pull request.
+
 ## Language
 
 - Code, comments, commits, branches, and pull requests: English.
