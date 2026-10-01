@@ -61,7 +61,7 @@ included.
   BLOCKING or IMPORTANT findings.
 - `implement-issue` in fix mode fixes what `verify-findings` confirmed, in
   one cycle. There is no second review: open minors are listed in the PR
-  body for the owner.
+  body as a record. Nobody reviews them before the merge.
 
 ## 6. Commit and publish
 
@@ -93,9 +93,10 @@ issue bodies, and re-adds it when the body is edited through `gh` or
 - After `publish` and the footer removal step, the `ship` skill merges with
   `scripts/merge.sh <pr>` only. Never merge any other way.
 - The script requires the PR open, based on `main`, mergeable and with no
-  failing checks. It squash-merges through the REST API with
-  `<PR title> (#<N>)` as the title (squash is the only method enabled in
-  the repository settings), and prints `verified` and `reason` of the
+  failing checks, and waits until the required status `Vercel`
+  (`REQUIRED_STATUS` in the script) is reported and succeeded. It
+  squash-merges through the REST API with `<PR title> (#<N>)` as the title
+  (squash is the only method enabled in the repository settings), and prints `verified` and `reason` of the
   merge commit, which the session reports.
 - The squash commit is signed by GitHub and lands on `main` as one commit
   with the PR title and the number.

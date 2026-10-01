@@ -5,15 +5,20 @@
 #     1. Require a positive PR number.
 #     2. Read the PR: require it open, not merged, based on main.
 #     3. Wait for GitHub to compute mergeability and require it mergeable.
-#     4. Require no failing check runs and no failing commit statuses on the head commit.
+#     4. Wait until the head commit reports the required status (REQUIRED_STATUS) and none is pending
+#        (timeout 15 minutes; never merge on zero checks or without the required status), then require
+#        all of them succeeded; print each one with its result.
 #     5. Squash-merge with "<PR title> (#<pr>)" as the commit title, pinned to the checked head commit.
 #     6. Read the merge commit through the REST commits endpoint.
 #     7. Print the merge commit SHA, title, verified and reason.
 
 set -euo pipefail
 
+readonly REQUIRED_STATUS="Vercel"  # name of the check or status that must be reported before merging
 readonly BASE="main"
 readonly REPO_API="repos/{owner}/{repo}"
+readonly CHECKS_INTERVAL=15  # seconds between polls
+readonly CHECKS_TIMEOUT=900  # seconds before giving up on pending or missing checks
 
 die() {
   printf 'merge: %s\n' "$*" >&2
@@ -32,6 +37,22 @@ read_pr() {
   gh api "$REPO_API/pulls/$1" --jq \
     '[.state, (.merged | tostring), .base.ref, (.mergeable | tostring), .mergeable_state, .head.sha] | join("\t")' \
     || die "cannot read PR #$1"
+}
+
+# Prints "<kind>\t<name>\t<verdict>" per check run and commit status of a commit.
+# The verdict is success, pending, or the failing conclusion or state.
+read_checks() {
+  local sha="$1"
+  gh api "$REPO_API/commits/$sha/check-runs?per_page=100" --jq '
+    (.check_runs[] | ["check run", .name,
+      (if .status != "completed" then "pending"
+       elif (.conclusion == "success" or .conclusion == "neutral" or .conclusion == "skipped") then "success"
+       else (.conclusion // "unknown") end)] | join("\t")),
+    (if .total_count > (.check_runs | length) then "check run\t(more than 100)\tunreadable" else empty end)' \
+    || die "cannot read the check runs of $sha"
+  gh api "$REPO_API/commits/$sha/status?per_page=100" --jq \
+    '.statuses[] | ["status", .context, .state] | join("\t")' \
+    || die "cannot read the commit statuses of $sha"
 }
 
 main() {
@@ -64,16 +85,34 @@ main() {
   [[ "$state" == open && "$merged" == false && "$base" == "$BASE" ]] \
     || die "PR #$pr changed while waiting for mergeability"
 
-  # 4. Failing checks on the head commit. Pending checks do not stop the merge.
-  local failed_runs failed_statuses
-  failed_runs="$(gh api "$REPO_API/commits/$sha/check-runs?per_page=100" --jq \
-    '[.check_runs[] | select(.conclusion == "failure" or .conclusion == "timed_out" or .conclusion == "cancelled" or .conclusion == "action_required" or .conclusion == "startup_failure")] | length')" \
-    || die "cannot read the check runs of $sha"
-  failed_statuses="$(gh api "$REPO_API/commits/$sha/status" --jq \
-    '[.statuses[] | select(.state == "failure" or .state == "error")] | length')" \
-    || die "cannot read the commit statuses of $sha"
-  [[ "$failed_runs" == 0 && "$failed_statuses" == 0 ]] \
-    || die "failing checks on $sha (check runs: $failed_runs, statuses: $failed_statuses)"
+  # 4. Wait for at least one check and none pending, then require all of them succeeded.
+  local checks failing pending required kind name verdict start=$SECONDS
+  while :; do
+    checks="$(read_checks "$sha")"
+    failing="$(awk -F'\t' '$3 != "success" && $3 != "pending"' <<<"$checks")"
+    pending="$(awk -F'\t' '$3 == "pending"' <<<"$checks")"
+    if [[ -n "$failing" ]]; then
+      die "failing checks on $sha: $(cut -f1-3 --output-delimiter=' ' <<<"$failing" | paste -sd ';' -)"
+    fi
+    required="$(awk -F'\t' -v n="$REQUIRED_STATUS" '$2 == n' <<<"$checks")"
+    if [[ -n "$required" && -z "$pending" ]]; then
+      break
+    fi
+    if [[ $((SECONDS - start)) -ge $CHECKS_TIMEOUT ]]; then
+      [[ -n "$required" ]] \
+        || die "timed out after ${CHECKS_TIMEOUT}s: required '$REQUIRED_STATUS' not reported on $sha; refusing to merge"
+      die "timed out after ${CHECKS_TIMEOUT}s waiting for: $(cut -f1-2 --output-delimiter=' ' <<<"$pending" | paste -sd ';' -)"
+    fi
+    if [[ -z "$required" ]]; then
+      info "required '$REQUIRED_STATUS' not reported on $sha yet; waiting"
+    else
+      info "waiting for $(grep -c . <<<"$pending") pending check(s) on $sha"
+    fi
+    sleep "$CHECKS_INTERVAL"
+  done
+  while IFS=$'\t' read -r kind name verdict; do
+    info "$kind '$name': $verdict"
+  done <<<"$checks"
 
   # 5. Squash merge pinned to the checked head commit.
   local commit_title merge_sha
