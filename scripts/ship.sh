@@ -16,7 +16,7 @@
 #    12. Commit the paths: new commit, amend, or no commit.
 #    13. Refuse Co-Authored-By and Claude-Session trailers on the branch.
 #    14. Write .claude/loop/pr-<issue>.meta.
-#    15. Print the meta file and the branch log, then ask for the PR body and the owner's approval.
+#    15. Print the meta file and the branch log, then ask for the PR body and the publish run.
 #   publish <issue>
 #     1. Require the meta file and a non-empty body file.
 #     2. Validate the body.
@@ -293,8 +293,7 @@ cmd_prepare() {
   printf '\ngit log --oneline origin/%s..HEAD\n' "$BASE"
   git log --oneline "origin/$BASE..HEAD"
   printf '\n'
-  info "write $LOOP_DIR/pr-$issue.body.md (first line: Closes #$issue)"
-  info "wait for the owner's approval, then run: scripts/ship.sh publish $issue"
+  info "write $LOOP_DIR/pr-$issue.body.md (first line: Closes #$issue), then run: scripts/ship.sh publish $issue"
 }
 
 validate_body() {
