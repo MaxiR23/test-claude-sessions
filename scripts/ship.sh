@@ -28,6 +28,7 @@
 #     8. Create mode: create the PR with base, title, label, assignee and body.
 #     9. Update mode: edit the PR title and body.
 #    10. Print the PR number, title, labels, draft state, base and URL.
+#    11. Print a reminder that the footer removal step from CLAUDE.md is required.
 
 set -euo pipefail
 
@@ -439,6 +440,10 @@ cmd_publish() {
   gh api "$REPO_API/pulls/$number" --jq \
     '"PR #\(.number)\nTitle: \(.title)\nLabels: \([.labels[].name] | join(", "))\nDraft: \(.draft)\nBase: \(.base.ref)\nURL: \(.html_url)"' \
     || die "cannot read PR #$number"
+
+  # 11. Footer reminder.
+  printf '\n'
+  info "required: remove the PR footer as described in the CLAUDE.md Shipping section"
 }
 
 main() {
