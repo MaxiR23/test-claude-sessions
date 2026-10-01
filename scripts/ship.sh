@@ -13,10 +13,11 @@
 #     9. Fail if the branch is not pushed and is behind origin/main.
 #    10. Validate every path.
 #    11. Refuse Anthropic noreply author or committer identities.
-#    12. Commit the paths: new commit, amend, or no commit.
-#    13. Refuse Co-Authored-By and Claude-Session trailers on the branch.
-#    14. Write .claude/loop/pr-<issue>.meta.
-#    15. Print the meta file and the branch log, then ask for the PR body and the publish run.
+#    12. Run the gate declared in CLAUDE.md and stop if it fails.
+#    13. Commit the paths: new commit, amend, or no commit.
+#    14. Refuse Co-Authored-By and Claude-Session trailers on the branch.
+#    15. Write .claude/loop/pr-<issue>.meta.
+#    16. Print the meta file and the branch log, then ask for the PR body and the publish run.
 #   publish <issue>
 #     1. Require the meta file and a non-empty body file.
 #     2. Validate the body.
@@ -24,11 +25,12 @@
 #     4. Require the meta branch, the meta commit and no uncommitted tracked changes.
 #     5. Require the label to exist in the repository.
 #     6. Re-check the open PR against the meta mode.
-#     7. Push the branch.
-#     8. Create mode: create the PR with base, title, label, assignee and body.
-#     9. Update mode: edit the PR title and body.
-#    10. Print the PR number, title, labels, draft state, base and URL.
-#    11. Print a reminder that the footer removal step from CLAUDE.md is required.
+#     7. Run the gate declared in CLAUDE.md and stop if it fails.
+#     8. Push the branch.
+#     9. Create mode: create the PR with base, title, label, assignee and body.
+#    10. Update mode: edit the PR title and body.
+#    11. Print the PR number, title, labels, draft state, base and URL.
+#    12. Print a reminder that the footer removal step from CLAUDE.md is required.
 
 set -euo pipefail
 
@@ -142,6 +144,12 @@ check_trailers() {
   fi
 }
 
+# Runs the gate declared in CLAUDE.md from the repository root.
+run_gate() {
+  info "running the gate: pnpm --dir site build"
+  pnpm --dir site build || die "the gate failed (pnpm --dir site build); fix it and run again"
+}
+
 cmd_prepare() {
   [[ $# -ge 1 ]] || usage
   local issue="$1"
@@ -237,7 +245,10 @@ cmd_prepare() {
   # 11. Identities.
   check_identities
 
-  # 12. Commit.
+  # 12. Gate.
+  run_gate
+
+  # 13. Commit.
   local ahead amend=0
   ahead="$(git rev-list --count "origin/$BASE..HEAD")"
   if [[ "${#paths[@]}" -eq 0 ]]; then
@@ -263,10 +274,10 @@ cmd_prepare() {
     fi
   fi
 
-  # 13. Trailers.
+  # 14. Trailers.
   check_trailers
 
-  # 14. Meta file.
+  # 15. Meta file.
   local mode pr_title meta head
   if [[ -n "$pr" ]]; then
     mode="update #$pr"
@@ -287,7 +298,7 @@ cmd_prepare() {
     printf 'Mode: %s\n' "$mode"
   } >"$meta"
 
-  # 15. Report.
+  # 16. Report.
   printf '\n%s\n' "$meta"
   cat "$meta"
   printf '\ngit log --oneline origin/%s..HEAD\n' "$BASE"
@@ -423,10 +434,13 @@ cmd_publish() {
       ;;
   esac
 
-  # 7. Push.
+  # 7. Gate.
+  run_gate
+
+  # 8. Push.
   git push -u origin "$m_branch" || die "git push failed"
 
-  # 8 and 9. Create or update.
+  # 9 and 10. Create or update.
   local number
   if [[ "$m_mode" == create ]]; then
     number="$(create_pr "$owner" "$m_branch" "$m_title" "$m_label" "$body")"
@@ -435,14 +449,14 @@ cmd_publish() {
     update_pr "$number" "$m_title" "$body"
   fi
 
-  # 10. Report.
+  # 11. Report.
   gh api "$REPO_API/pulls/$number" --jq \
     '"PR #\(.number)\nTitle: \(.title)\nLabels: \([.labels[].name] | join(", "))\nDraft: \(.draft)\nBase: \(.base.ref)\nURL: \(.html_url)"' \
     || die "cannot read PR #$number"
 
-  # 11. Footer reminder.
+  # 12. Footer reminder.
   printf '\n'
-  info "required: remove the PR footer as described in the CLAUDE.md Shipping section"
+  info "required: remove the PR footer as described in docs/workflow.md, section 7"
 }
 
 main() {
