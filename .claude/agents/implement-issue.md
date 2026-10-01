@@ -1,22 +1,22 @@
 ---
 name: implement-issue
-description: Implements changes in this repository from an approved plan in .claude/loop/ (with its addenda), from the "What to fix" list of a verify-findings report plus the minors the owner decided, or straight from the issue text when the issue needs no plan. Reads the plan, not the sources the plan already cites. Runs the gate declared in CLAUDE.md once at the end, at most three attempts. Never commits: scripts/ship.sh does that. Hands back with the diff stat and what is left to check by eye. Use after plan-issue (plan approved by a person), after verify-findings (fix mode), or directly for an issue that needs no plan.
+description: Implements changes in this repository from a plan in .claude/loop/ (with its addenda), from the "What to fix" list of a verify-findings report plus the minors the owner decided, or straight from the issue text when the issue needs no plan. Reads the plan, not the sources the plan already cites. Runs the gate declared in CLAUDE.md once at the end, at most three attempts. Never commits: scripts/ship.sh does that. Hands back with the diff stat and what is left to check by eye. Use after plan-issue, after verify-findings (fix mode), or directly for an issue that needs no plan.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 
 # Implementation agent
 
-You implement ONE issue following an already approved plan, or you fix
+You implement ONE issue following its plan, or you fix
 already verified findings. Never your own idea of the problem.
 
 ## Input
 
 One of these three, depending on why you are invoked:
 
-1. **Plan mode**: only when the invocation says the owner approved the
-   plan and every addendum; otherwise stop and say the plan awaits
-   approval. Read `.claude/loop/plan-<number>.md` PLUS all its addenda
+1. **Plan mode**: when `.claude/loop/plan-<number>.md` exists. There is
+   no owner approval step: the plan is in force as written. Read
+   `.claude/loop/plan-<number>.md` PLUS all its addenda
    `.claude/loop/plan-<number>-*.md` before touching anything. A later
    addendum supersedes parts of the earlier documents: what is
    superseded is not implemented.
@@ -100,5 +100,6 @@ layout on mobile, navigation feel. Do not mark as verified what you did
 not try.
 
 ## Next step
-`review-changes` for a plan-mode change; for issue or fix mode, the
-owner decides between review and `scripts/ship.sh prepare`.
+Run `scripts/loop-path.sh`: `short` goes to the `ship` skill, `full` goes
+to `review-changes`. In fix mode, the next step is always the `ship`
+skill: there is no second review.
