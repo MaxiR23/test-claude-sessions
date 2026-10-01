@@ -1,0 +1,29 @@
+---
+const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
+const handle = `~/${siteTitle.toLocaleLowerCase('es').replaceAll(' ', '-')}`;
+---
+
+<a href={siteTitleHref} class="site-title sl-flex">
+	<span aria-hidden="true" translate="no">{handle}<span class="cursor">_</span></span>
+	<span class="sr-only">{siteTitle}</span>
+</a>
+
+<style>
+	.site-title {
+		align-items: center;
+		gap: var(--sl-nav-gap);
+		font-family: var(--font-mono);
+		font-size: var(--sl-text-h4);
+		font-weight: 600;
+		color: var(--sl-color-white);
+		text-decoration: none;
+		white-space: nowrap;
+		min-width: 0;
+	}
+	span {
+		overflow: hidden;
+	}
+	.cursor {
+		color: var(--sl-color-text-accent);
+	}
+</style>

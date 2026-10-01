@@ -1,0 +1,31 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+import { Icon } from '@astrojs/starlight/components';
+---
+
+<Default><slot /></Default>
+<a href="#_top" class="back-to-top" aria-label="Volver arriba">
+	<Icon name="up-arrow" />
+</a>
+
+<style>
+	.back-to-top {
+		position: fixed;
+		inset-block-end: var(--space-4);
+		inset-inline-end: var(--space-4);
+		inline-size: var(--size-touch);
+		block-size: var(--size-touch);
+		display: grid;
+		place-items: center;
+		border: var(--border);
+		border-radius: var(--radius-full);
+		background: var(--sl-color-gray-6);
+		color: var(--sl-color-text-accent);
+		z-index: var(--sl-z-index-toc);
+	}
+	@media print {
+		.back-to-top {
+			display: none;
+		}
+	}
+</style>

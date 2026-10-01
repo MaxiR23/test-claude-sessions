@@ -1,0 +1,36 @@
+---
+title: Bitácora agéntica
+description: Cómo configuré sesiones de Claude Code en la nube para que resuelvan issues de punta a punta.
+template: splash
+eyebrow: WIKI DE ESTUDIO · CLAUDE CODE
+hero:
+  title: Agentes que trabajan mientras vos no estás.
+  tagline: Cómo configuré sesiones de Claude Code en la nube para que resuelvan issues de punta a punta, respetando las reglas del repo. Una guía viva con lo que voy aprendiendo y configurando.
+  actions:
+    - text: Empezar la guía
+      link: /configuracion/introduccion/
+      variant: primary
+    - text: Ver el workflow
+      link: /workflow/introduccion/
+      variant: secondary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title='<span class="card-number">01</span> Configuración'>
+    Cómo preparar el entorno de nube, la identidad y las reglas del repo.
+  </Card>
+  <Card title='<span class="card-number">02</span> Workflow'>
+    El loop de agentes que lleva un issue de la idea al merge.
+  </Card>
+</CardGrid>
+
+```text frame="terminal" title="sesión en la nube"
+$ claude --cloud "Resolvé el issue #12"
+
+plan-issue       -> plan de implementación
+implement-issue  -> código y gate
+review-changes   -> revisión
+ship             -> PR y merge
+```

@@ -1,0 +1,104 @@
+---
+// Based on Starlight 0.42.4 Hero.astro, without image branches, plus an eyebrow.
+import { LinkButton } from '@astrojs/starlight/components';
+
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, tagline, actions = [] } = data.hero || {};
+const { eyebrow } = data;
+---
+
+<div class="hero">
+	<div class="sl-flex stack">
+		<div class="sl-flex copy">
+			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
+			<h1 id="_top" data-page-title set:html={title} />
+			{tagline && <div class="tagline" set:html={tagline} />}
+		</div>
+		{
+			actions.length > 0 && (
+				<div class="sl-flex actions">
+					{actions.map(
+						({ attrs: { class: className, ...attrs } = {}, icon, link: href, text, variant }) => (
+							<LinkButton {href} {variant} icon={icon?.name} class:list={[className]} {...attrs}>
+								{text}
+								{icon?.html && <Fragment set:html={icon.html} />}
+							</LinkButton>
+						)
+					)}
+				</div>
+			)
+		}
+	</div>
+</div>
+
+<style>
+	@layer starlight.core {
+		.hero {
+			display: grid;
+			grid-template-columns: 100%;
+			align-items: center;
+			gap: var(--space-4);
+			padding-bottom: var(--space-4);
+		}
+
+		.stack {
+			flex-direction: column;
+			gap: clamp(var(--space-5), calc(var(--space-5) + 1vw), var(--space-6));
+			text-align: center;
+		}
+
+		.copy {
+			flex-direction: column;
+			gap: var(--space-4);
+			align-items: center;
+		}
+
+		.copy > * {
+			max-width: 50ch;
+		}
+
+		.eyebrow {
+			font-family: var(--font-mono);
+			font-size: var(--sl-text-sm);
+			color: var(--sl-color-text-accent);
+			margin: 0;
+		}
+
+		h1 {
+			font-family: var(--font-mono);
+			font-size: clamp(var(--sl-text-3xl), calc(var(--space-1) + 5vw), var(--sl-text-6xl));
+			line-height: var(--sl-line-height-headings);
+			font-weight: 600;
+			color: var(--sl-color-white);
+		}
+
+		.tagline {
+			font-size: clamp(var(--sl-text-base), 2vw, var(--sl-text-xl));
+			color: var(--sl-color-gray-3);
+		}
+
+		.actions {
+			gap: var(--space-4) var(--space-6);
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		@media (min-width: 50rem) {
+			.hero {
+				padding-block: clamp(var(--space-7), 10vmin, calc(var(--space-7) * 3));
+			}
+
+			.stack {
+				text-align: start;
+			}
+
+			.copy {
+				align-items: flex-start;
+			}
+
+			.actions {
+				justify-content: flex-start;
+			}
+		}
+	}
+</style>
