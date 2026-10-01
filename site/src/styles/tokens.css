@@ -1,0 +1,85 @@
+:root {
+	--color-bg: #0f1012;
+	--color-surface: #17191d;
+	--color-border: #26282d;
+	--color-text: #eceae4;
+	--color-text-muted: #a3a39c;
+	--color-accent: #f0b44c;
+	--color-tip: var(--color-accent);
+	--color-tip-bg: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+	--color-danger: #f2706a;
+	--color-danger-bg: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+	--color-accent-bg: color-mix(in srgb, var(--color-accent) 15%, var(--color-bg));
+
+	--font-mono: 'JetBrains Mono', monospace;
+	--font-body: 'IBM Plex Sans', sans-serif;
+
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.5rem;
+	--space-6: 2rem;
+	--space-7: 3rem;
+
+	--radius-sm: 0.25rem;
+	--radius-md: 0.5rem;
+	--radius-full: 999rem;
+	--border-width: 1px;
+	--border: var(--border-width) solid var(--color-border);
+
+	--size-touch: 2.75rem;
+	--focus-ring-width: 2px;
+
+	--sl-font: var(--font-body);
+	--sl-font-mono: var(--font-mono);
+}
+
+:root[data-theme='dark'],
+[data-theme='dark'] ::backdrop {
+	--sl-color-white: var(--color-text);
+	--sl-color-gray-1: var(--color-text);
+	--sl-color-gray-2: var(--color-text);
+	--sl-color-gray-3: var(--color-text-muted);
+	--sl-color-gray-4: var(--color-text-muted);
+	--sl-color-gray-5: var(--color-border);
+	--sl-color-gray-6: var(--color-surface);
+	--sl-color-black: var(--color-bg);
+	--sl-color-accent-low: var(--color-accent-bg);
+	--sl-color-accent: var(--color-accent);
+	--sl-color-accent-high: var(--color-accent);
+	--sl-color-hairline: var(--color-border);
+	--sl-color-hairline-light: var(--color-border);
+}
+
+:is(.sl-markdown-content, .hero) :is(h1, h2, h3, h4, h5, h6),
+h1#_top,
+.card .title {
+	font-family: var(--font-mono);
+}
+
+:root[data-theme='dark'] .starlight-aside--tip {
+	--sl-color-asides-text-accent: var(--color-tip);
+	--sl-color-asides-border: var(--color-tip);
+	background-color: var(--color-tip-bg);
+}
+
+:root[data-theme='dark'] .starlight-aside--caution {
+	--sl-color-asides-text-accent: var(--color-danger);
+	--sl-color-asides-border: var(--color-danger);
+	background-color: var(--color-danger-bg);
+}
+
+.card-number {
+	font-family: var(--font-mono);
+	color: var(--sl-color-text-accent);
+}
+
+.sl-link-button {
+	min-block-size: var(--size-touch);
+}
+
+:focus-visible {
+	outline: var(--focus-ring-width) solid var(--sl-color-text-accent);
+	outline-offset: var(--space-1);
+}

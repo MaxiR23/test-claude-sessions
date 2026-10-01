@@ -20,6 +20,7 @@ cases.
 - After every `publish` and every issue `create`, remove the attribution
   footer with the built-in GitHub tools only, never `gh` or `gh api`, and
   read it back to confirm. See `docs/workflow.md`.
+- Read `docs/design.md` before any change to `site/`, and follow it.
 - Never print, log or echo the value of any environment variable.
 - Never write a secret, token, email or attribution to an AI tool in code,
   content, commits, issues or pull requests.
