@@ -1,6 +1,6 @@
 # Cloud session setup and rule enforcement
 
-How this repository is configured for Claude Code cloud sessions, what each setting solves, and what was observed while testing. Documented behavior comes only from the official pages listed in [References](#6-references). Anything seen while testing is labeled as an observation in [section 5](#5-observed-behavior-in-this-repo).
+How this repository is configured for Claude Code cloud sessions, what each setting solves, and what was observed while testing. Documented behavior comes only from the official pages listed in [References](#7-references). Anything seen while testing is labeled as an observation in [section 6](#6-observed-behavior-in-this-repo).
 
 ## 1. Cloud environment variables
 
@@ -11,7 +11,7 @@ Two things apply to every variable set this way:
 - **Visibility.** Anyone who uses the environment can read the values. The environment form says the same next to the variables box. Do not put a value there that other users of the environment must not see.
 - **When they apply.** A session reads the environment's values when it is created, and again each time Claude Code starts in the session's VM, which happens when an idle VM is restored or when a reclaimed VM is rebuilt. After a variable is edited, added, or removed, an existing session keeps the values it last read until its VM is next restored or rebuilt. In practice: save the variables, then start a new session.
 
-This repository relies on two groups of variables.
+This repository relies on one group of variables, the git identity.
 
 ### Git identity
 
@@ -26,20 +26,11 @@ Git reads these variables before any `user.name` or `user.email` configuration. 
 
 Set all four to your own name and email. For the email, use the noreply address that GitHub provides for your account, in the form `<id>+<username>@users.noreply.github.com`, so commits are linked to your GitHub account without exposing a personal address. The real value is not written here on purpose.
 
-### `GH_TOKEN`
+### `GH_TOKEN` is not recommended
 
-`GH_TOKEN` is a GitHub personal access token that the session uses for GitHub API calls. The official pages document the two cases:
+An earlier version of this guide recommended setting a personal `GH_TOKEN` in the environment so that GitHub requests would be attributed to the owner. That recommendation is withdrawn: setting it did not change attribution in this repository. See [section 6](#6-observed-behavior-in-this-repo). GitHub access is set up through the account connection instead. See [section 3](#3-github-connection-method).
 
-- **Token set.** The value passes through to the container unchanged, so scripts and the `gh` CLI use it directly. Requests are then made as the account that owns the token, in this repository the owner, instead of through the Claude GitHub App.
-- **Token not set.** The GitHub proxy authenticates for the session. See [section 3](#3-github-access-from-cloud-sessions).
-
-For this repository the token is a fine-grained personal access token with:
-
-- **Repository access** limited to this repository only.
-- **Permissions**: Contents, Issues, and Pull requests, each set to read and write.
-- **An expiration date**, so a leaked or forgotten token stops working on its own.
-
-A token set as an environment variable is visible to anyone who uses the environment, like any other variable. Never commit it, never paste it into an issue, a pull request, or a document, and never print it from a session. To check whether it is present, test only that the variable is non-empty.
+If a token is ever set as an environment variable, it is visible to anyone who uses the environment, like any other variable. Never commit it, never paste it into an issue, a pull request, or a document, and never print it from a session.
 
 ## 2. Attribution settings
 
@@ -66,9 +57,29 @@ The older `includeCoAuthoredBy` setting is deprecated. `attribution` replaces it
 ### What these settings do not cover
 
 - **The git author and committer identity.** `attribution.commit` only controls the trailer appended to the commit message. The name and email recorded on the commit come from the git identity in [section 1](#git-identity).
-- **The footer added to pull request bodies.** Setting `attribution.pr` to `""` did not stop a footer from being appended to pull request bodies in this repository. See [section 5](#5-observed-behavior-in-this-repo). The official pages do not describe this footer, so treat it as an observation.
+- **The footer added to pull request bodies.** Setting `attribution.pr` to `""` did not stop a footer from being appended to pull request bodies in this repository. See [section 6](#6-observed-behavior-in-this-repo). The official pages do not describe this footer, so treat it as an observation.
 
-## 3. GitHub access from cloud sessions
+## 3. GitHub connection method
+
+Cloud sessions need access to GitHub to clone repositories and push branches. The official pages document two ways to connect a Claude account to GitHub.
+
+| Method | How you connect | Repositories sessions can reach |
+| :- | :- | :- |
+| **Claude GitHub App** | Authorize the Claude GitHub App during browser onboarding at claude.ai/code | Any public repository, and private repositories that the Claude GitHub App is installed on |
+| **`/web-setup`** | Run `/web-setup` in the Claude Code CLI | Any repository the local `gh` token can access, whether or not the Claude GitHub App is installed |
+
+What the official pages say about each method:
+
+- **`/web-setup` syncs the local `gh` token.** It reads the token that `gh auth token` prints, asks for confirmation, and sends it to Anthropic, where it is stored encrypted with the claude.ai account. Cloud sessions then use it for GitHub access until it is removed. If GitHub was already connected in the browser, `/web-setup` warns that continuing replaces that connection.
+- **Repository reach depends on the method**, as in the table above. With the GitHub App, a private repository is reachable only when the App is installed on it. With `/web-setup`, reach is whatever the `gh` token can see.
+- **The GitHub App is required for Auto-fix.** Auto-fix, where Claude watches a pull request and responds to CI failures and review comments, requires the Claude GitHub App to be installed on the repository. Threads in a project also need the App on each repository they clone, whichever method was used.
+- **The connection is managed from the connectors page.** Disconnecting GitHub at claude.ai/customize/connectors deletes the GitHub credentials cloud sessions use, whether they came from the browser or from `/web-setup`. Sessions lose GitHub access until GitHub is connected again.
+
+In both methods, the credentials stay encrypted on Anthropic's servers and never enter the session's VM. GitHub operations go through the GitHub proxy described in [section 4](#4-github-access-from-cloud-sessions).
+
+This repository now connects GitHub with `/web-setup`. Its effect on attribution, such as the "with Claude" label events and the pull request footer in [section 6](#6-observed-behavior-in-this-repo), is still being tested.
+
+## 4. GitHub access from cloud sessions
 
 In Anthropic-hosted environments, all GitHub operations go through a dedicated GitHub proxy that keeps the real GitHub credentials outside the session's VM. The proxy applies regardless of the environment's network access level.
 
@@ -76,7 +87,7 @@ In Anthropic-hosted environments, all GitHub operations go through a dedicated G
 
 The `gh` CLI is pre-installed in cloud sessions and reads `GH_TOKEN` automatically, so `gh auth login` is never needed. When neither `GH_TOKEN` nor `GITHUB_TOKEN` is set in the environment, both variables read as the placeholder string `proxy-injected` inside the session, and the proxy substitutes the real credentials on outbound GitHub requests. `gh` works in that case, but a script that reads the variable directly gets the placeholder, not a usable token.
 
-When `GH_TOKEN` is set in the environment, as in this repository, the value is used directly and the requests are made as the token's owner.
+This repository does not set `GH_TOKEN`. See [section 1](#gh_token-is-not-recommended).
 
 ### REST instead of GraphQL
 
@@ -89,7 +100,7 @@ Several `gh` subcommands use GraphQL under the hood, among them `gh pr list`, `g
 - **Push protection.** `git push` through the proxy works only against the session's current working branch. Cloning, fetching, and pull request operations work normally.
 - **Repository scope.** GitHub API requests reach only repositories attached to the session. A request for any other repository gets a 403.
 
-## 4. Rule enforcement with `scripts/ship.sh`
+## 5. Rule enforcement with `scripts/ship.sh`
 
 ### Why rules are enforced by code
 
@@ -112,16 +123,17 @@ The script enforces, among other things:
 
 The split matters: `prepare` is cheap to redo and touches nothing outside the clone, while `publish` is the only step that reaches GitHub for writes, and it refuses to run if anything changed since `prepare`. `.claude/loop/` is listed in `.gitignore`, so the meta and body files never enter a commit.
 
-## 5. Observed behavior in this repo
+## 6. Observed behavior in this repo
 
-The following was observed while testing cloud sessions on this repository. None of it is described by the official pages in [section 6](#6-references), so treat it as observation, not documented behavior, and expect it to change.
+The following was observed while testing cloud sessions on this repository. None of it is described by the official pages in [section 7](#7-references), so treat it as observation, not documented behavior, and expect it to change.
 
 - **A "Generated by Claude Code" footer was appended to pull request bodies**, both when the pull request was created and when it was edited, even with `attribution.pr` set to `""`. The `attribution.pr` setting documents the attribution line in the description; the footer seen here was added on top of the body passed to `gh`.
-- **Label and assignee events showed "with Claude"** in the pull request timeline when the session acted through the Claude GitHub App, that is, without `GH_TOKEN` set. This is one reason the repository sets `GH_TOKEN`: with it, the same events are attributed to the owner.
+- **Label and assignee events showed "with Claude"** in the pull request timeline when the session acted through the Claude GitHub App, that is, without `GH_TOKEN` set.
+- **Setting a personal `GH_TOKEN` did not change attribution.** With a personal `GH_TOKEN` set in the environment, label events still showed "with Claude" and the footer was still appended to pull request bodies. This is why [section 1](#gh_token-is-not-recommended) no longer recommends it.
 - **Pushing to a branch other than the session-assigned one worked.** A cloud session is told to push to a `claude/...` branch, while `scripts/ship.sh` pushes the `type/short-description` branch it created. The push went through.
-- **A renamed repository breaks `gh api repos/{owner}/{repo}/...` through the proxy.** This repository was renamed from `test-clause-sessions` to `test-claude-sessions`. A session cloned under the old name resolves the placeholders to the old name, GitHub answers with a redirect to a numeric-ID path, and the proxy rejects that path with a 403. Requests under the new name get a 403 as well when the session is not attached to the repository under that name. `git fetch` and `git push` through the old name keep working.
+- **A renamed repository breaks `gh api repos/{owner}/{repo}/...` through the proxy.** This repository was renamed from `test-clause-sessions` to `test-claude-sessions`. A session cloned under the old name resolves the placeholders to the old name, GitHub answers with a redirect to a numeric-ID path, and the proxy rejects that path with a 403. Requests under the new name get a 403 as well when the session is not attached to the repository under that name. `git fetch` and `git push` through the old name keep working. After the rename, sessions kept using the old name, and `gh api` calls through the proxy stayed broken until the repository was attached to the session under its new name.
 
-## 6. References
+## 7. References
 
 - [Use Claude Code in the cloud](https://code.claude.com/docs/en/claude-code-on-the-web)
 - [Get started with Claude Code in the cloud](https://code.claude.com/docs/en/web-quickstart)
