@@ -27,10 +27,12 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 </CardGrid>
 
 ```text frame="terminal" title="sesión en la nube"
-$ claude --cloud "Resolvé el issue #12"
+$ claude --cloud "Resolve issue #24"
 
-plan-issue       -> plan de implementación
+plan-issue       -> plan (si hace falta)
 implement-issue  -> código y gate
+loop-path.sh     -> camino corto o completo
 review-changes   -> revisión
-ship             -> PR y merge
+verify-findings  -> confirma hallazgos
+ship             -> PR, checks y merge
 ```
