@@ -1,4 +1,4 @@
-# test-claude-sessions
+# test-clause-sessions
 
 Practice repository for learning how **Claude Code cloud sessions** work.
 
@@ -13,7 +13,7 @@ This repo is a sandbox. Nothing here is production code. It exists to:
 
 ## Rules for this repo
 
-- Branch naming: `w_YYMMDD_type_description`
+- Branch naming: `type/short-description` (e.g. `feat/login`, `fix/header-bug`, `docs/setup-notes`)
 - Commits: Conventional Commits, in English
 - No AI attribution in commits, branches, or pull requests
 
