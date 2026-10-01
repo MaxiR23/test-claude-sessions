@@ -2,8 +2,9 @@
 name: ship
 description: >-
   Takes a finished issue of this repo to its pull request: commits by
-  explicit path through scripts/ship.sh, writes the PR body, publishes, and
-  removes the attribution footer. Use when the loop reaches its last step,
+  explicit path through scripts/ship.sh, writes the PR body, publishes, removes
+  the attribution footer and merges through scripts/merge.sh. Use when the
+  loop reaches its last step,
   or when asked to "ship issue #N", "prepare the PR" or "publish the PR".
 ---
 
@@ -15,7 +16,8 @@ change, and the PR body.
 
 **Mutation posture.** Prepare commits on a `type/short-description`
 branch and writes to `.claude/loop/`. Publish pushes and opens or updates
-one PR, then removes the attribution footer. Never merges.
+one PR, then removes the attribution footer. Then merges only through
+`scripts/merge.sh`.
 
 ## Prepare
 
@@ -46,8 +48,15 @@ Run `scripts/ship.sh publish <N>` right after prepare, without waiting for
 approval. Then follow the footer removal step in `CLAUDE.md` with the
 built-in GitHub tools only, and read the PR back to confirm.
 
-Report the PR URL and the last 3 lines of the body. Then stop: the owner
-merges.
+Report the PR URL and the last 3 lines of the body, then go to Merge.
+
+## Merge
+
+1. Only after publish and after the footer removal was read back and
+   confirmed, run `scripts/merge.sh <PR number>`.
+2. If it fails, show its error and stop. Never merge another way.
+3. Report the merge commit SHA and its `verified` and `reason` lines as
+   printed by the script.
 
 ## Critical gotchas
 
@@ -55,7 +64,7 @@ merges.
 2. Never stage by hand, never `git add .`, `-A` or `-p`: paths go to the
    script.
 3. Never `--no-verify`, never force push, never push to `main`, never
-   merge.
+   merge except with `scripts/merge.sh`.
 4. If the script stops, do not work around it. Report the error.
 5. Nothing to deliver means saying so, never inventing a change.
 6. Never offer to watch the PR afterwards.

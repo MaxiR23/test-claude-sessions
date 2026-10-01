@@ -10,7 +10,9 @@ cases.
   `scripts/ship.sh`, through the `ship` skill.
 - Never create issues by hand. Only `scripts/issue.sh`, through the
   `create-issue` skill.
-- Never merge pull requests. The owner merges, with squash and merge.
+- Merge a pull request only with `scripts/merge.sh`, after `publish` and
+  the footer removal step. Never merge any other way: no `gh pr merge`, no
+  web UI, no other API call.
 - Never use GraphQL: it is blocked in cloud sessions. That rules out
   `gh issue create`, `gh issue edit`, `gh issue view`, `gh pr create` and
   `gh pr edit` as direct calls. Read with `gh api` (REST) or the built-in
@@ -37,12 +39,14 @@ and do not implement.
     review-changes                (agent, full path)
     verify-findings               (agent, only on BLOCKING or IMPORTANT)
     implement-issue, fix mode     (agent, only if verify confirmed fixes)
-    ship                          (skill: prepare, publish, footer removal)
+    ship                          (skill: prepare, publish, footer removal, merge)
 
 There is no owner approval at any stage. The only stop is a BLOCKING open
 question in the issue: write it in the issue and stop the loop on it.
 
 ## Gate
 
-None declared yet. When the site stack is chosen, the gate command goes
-here, and `implement-issue` runs it.
+The gate is the site build. `implement-issue` runs it once, when the plan
+is implemented.
+
+    pnpm --dir site build

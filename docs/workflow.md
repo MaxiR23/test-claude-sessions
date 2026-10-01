@@ -1,8 +1,8 @@
 # Development workflow
 
 Flow for every feature, fix or non-trivial change in this repo. The loop
-runs in a cloud session from end to end without owner approvals; the owner
-only merges.
+runs in a cloud session from end to end without owner approvals, merge
+included.
 
 ## 1. Open an issue
 
@@ -90,11 +90,16 @@ issue bodies, and re-adds it when the body is edited through `gh` or
 
 ## 8. Merge
 
-- Only the owner merges, with squash and merge, the only method enabled in
-  the repository settings.
+- After `publish` and the footer removal step, the `ship` skill merges with
+  `scripts/merge.sh <pr>` only. Never merge any other way.
+- The script requires the PR open, based on `main`, mergeable and with no
+  failing checks. It squash-merges through the REST API with
+  `<PR title> (#<N>)` as the title (squash is the only method enabled in
+  the repository settings), and prints `verified` and `reason` of the
+  merge commit, which the session reports.
 - The squash commit is signed by GitHub and lands on `main` as one commit
-  with the PR title and the number GitHub appends.
-- The session never merges and never offers to watch the PR.
+  with the PR title and the number.
+- The session never offers to watch the PR.
 
 ## Recovery
 
@@ -109,6 +114,8 @@ issue bodies, and re-adds it when the body is edited through `gh` or
   script's message and `prepare` again. A failure after the push and
   before the PR exists ("branch is pushed but has no open PR") is retried
   with `publish`, never `prepare`.
+- A `scripts/merge.sh` failure: report its message and stop; never merge
+  another way.
 - An open decision raised by `implement-issue`: if it is a product or
   design decision, write it in the issue as a BLOCKING question and stop
   the loop on that issue.
@@ -125,8 +132,8 @@ judgment.
 ## Cloud session notes
 
 - GraphQL is blocked by the session's GitHub proxy: use `gh api` (REST) or
-  the built-in GitHub tools. `scripts/ship.sh` and `scripts/issue.sh`
-  already do.
+  the built-in GitHub tools. `scripts/ship.sh`, `scripts/issue.sh` and
+  `scripts/merge.sh` already do.
 - Git identity comes from the cloud environment variables
   (`GIT_AUTHOR_*`, `GIT_COMMITTER_*`), and commit signing is disabled there
   (`GIT_CONFIG_*`). `scripts/ship.sh` refuses to commit as the AI identity.
