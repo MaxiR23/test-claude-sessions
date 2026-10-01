@@ -147,5 +147,5 @@ What is deliberately NOT touched.
 
 Do not print the full plan. Print only: the path of the file, the
 corrections to the issue, the steps (file plus one line each), the main
-risks, and close with: "Plan ready for review at <path>. If you approve
-it, run implement-issue."
+risks, and close with: "Plan ready at <path>. Next: implement-issue in
+plan mode." There is no owner approval step for the plan.

@@ -119,8 +119,7 @@ if none.
 - Categories skipped and why.
 - Findings per severity, and whether it is ready for PR.
 - Next step: verify-findings if any BLOCKING or IMPORTANT; otherwise
-  the owner decides on minors, then implement-issue in fix mode, then
-  `scripts/ship.sh prepare`.
+  the `ship` skill, with the minors listed as open in the PR body.
 
 ## In the chat
 
