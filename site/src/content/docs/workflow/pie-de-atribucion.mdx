@@ -1,0 +1,38 @@
+---
+title: Quitar el pie de atribución
+sidebar:
+  order: 6
+description: Cómo sacar el pie que el proxy agrega a los cuerpos de PRs e issues.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+El proxy de GitHub de la sesión en la nube agrega un pie de atribución a los cuerpos de PRs e issues, y lo vuelve a agregar cuando el cuerpo se edita con `gh` o `gh api`. Ese pie no figura en la documentación oficial. Después de cada `publish` y de cada `create` de un issue:
+
+<Steps>
+
+1. Leé el cuerpo con las herramientas de GitHub integradas.
+2. Si termina con el pie, quitá el pie y su separador `---`, solo con las herramientas integradas.
+3. Leelo de nuevo con las herramientas integradas y confirmá que ya no está. Para un PR, reportá las últimas 3 líneas del cuerpo.
+4. No cambies nada más del cuerpo.
+
+</Steps>
+
+:::caution
+Nunca edites el cuerpo con `gh` ni con `gh api` para esto: el pie vuelve.
+:::
+
+:::note[Observación]
+Guardar el cuerpo sin el pie a través de `gh api` hizo volver el pie.
+:::
+
+:::note[Observación]
+Guardar el cuerpo sin el pie con las herramientas de GitHub integradas de la sesión lo quitó, y siguió quitado al releer el PR.
+:::
+
+El ajuste `attribution.pr` documenta otra línea distinta. Ver [Atribución](/configuracion/atribucion/).
+
+## Fuentes
+
+- [Settings reference](https://code.claude.com/docs/en/settings-reference)
+- [Configure cloud environments](https://code.claude.com/docs/en/cloud-environments)

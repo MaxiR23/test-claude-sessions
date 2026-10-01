@@ -1,0 +1,76 @@
+---
+title: Variables de entorno
+sidebar:
+  order: 2
+description: Cómo fijar la identidad de git de las sesiones en la nube con variables de entorno.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Un entorno de nube es la configuración guardada en la que corre una sesión. Controla el acceso a la red, las variables de entorno y los scripts de preparación. Las variables usan formato `.env`, un par `KEY=value` por línea, y la sesión las lee como variables de entorno comunes que cualquier comando puede leer.
+
+:::caution
+Cualquier persona que use el entorno puede leer los valores. No pongas ahí nada que otros usuarios del entorno no deban ver.
+:::
+
+## Cuándo se aplican
+
+La sesión lee los valores cuando se crea, y otra vez cada vez que Claude Code arranca en su VM: al restaurar una VM inactiva o al reconstruir una VM reclamada. Si editás, agregás o quitás una variable, una sesión existente conserva los valores anteriores hasta que su VM se restaure o se reconstruya.
+
+:::tip
+Guardá las variables y abrí una sesión nueva.
+:::
+
+## Identidad de git
+
+Este repo depende de un grupo de variables: la identidad de git.
+
+| Variable | Para qué sirve |
+| :- | :- |
+| `GIT_AUTHOR_NAME` | Nombre que queda como autor del commit |
+| `GIT_AUTHOR_EMAIL` | Email que queda como autor del commit |
+| `GIT_COMMITTER_NAME` | Nombre que queda como committer |
+| `GIT_COMMITTER_EMAIL` | Email que queda como committer |
+
+Git lee estas variables antes que cualquier `user.name` o `user.email`. Una sesión en la nube empieza desde un clon limpio, sin configuración personal de git, así que sin ellas los commits no quedan a tu nombre.
+
+:::note[Observación]
+Antes de fijar las variables, los commits de la sesión quedaban con la identidad noreply de Anthropic. Eso lo vi en este repo, no lo describe ninguna página oficial.
+:::
+
+Poné las cuatro con tu nombre y tu email. Para el email usá la dirección noreply que GitHub ofrece para tu cuenta: vincula los commits a tu cuenta sin exponer una dirección personal.
+
+<Steps>
+
+1. Abrí el entorno de nube y buscá la caja de variables de entorno.
+2. Agregá las cuatro líneas, con tus datos en lugar de los marcadores.
+3. Guardá el entorno.
+4. Empezá una sesión nueva para que lea los valores.
+
+</Steps>
+
+```ini title=".env"
+GIT_AUTHOR_NAME=[TU NOMBRE]
+GIT_AUTHOR_EMAIL=[ID]+[USUARIO]@users.noreply.github.com
+GIT_COMMITTER_NAME=[TU NOMBRE]
+GIT_COMMITTER_EMAIL=[ID]+[USUARIO]@users.noreply.github.com
+```
+
+La firma de commits está desactivada en el entorno mediante variables `GIT_CONFIG_*`, y `scripts/ship.sh` se niega a commitear con la identidad noreply de Anthropic. Más detalle en [Rama, commit y publicación](/workflow/publicacion/).
+
+## `GH_TOKEN` no se recomienda
+
+Una versión anterior de esta guía recomendaba fijar un `GH_TOKEN` personal en el entorno para que las acciones en GitHub se atribuyeran a su dueño. Esa recomendación se retiró. El acceso a GitHub se arma con la conexión de la cuenta: ver [Conexión con GitHub](/configuracion/conexion-github/).
+
+:::note[Observación]
+Con un `GH_TOKEN` personal en el entorno, los eventos de etiquetas siguieron mostrando "with Claude" y el pie de atribución se siguió agregando a los cuerpos de los PRs. Fijarlo no cambió la atribución.
+:::
+
+:::caution
+Si alguna vez ponés un token como variable de entorno, queda visible para cualquiera que use el entorno. Nunca lo commitees, lo pegues en un issue, un PR o un documento, ni lo imprimas desde una sesión.
+:::
+
+## Fuentes
+
+- [Configure cloud environments](https://code.claude.com/docs/en/cloud-environments)
+- [Setting your commit email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)

@@ -1,0 +1,53 @@
+---
+title: Rama, commit y publicación
+sidebar:
+  order: 5
+description: Cómo la skill ship crea la rama, commitea y publica el PR.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## La rama
+
+No se crea a mano. `scripts/ship.sh prepare` la crea desde un `main` actualizado, con el nombre `type/short-description`: en minúsculas, con guiones, armado con las primeras palabras del título del issue. Nunca se commitea directo a `main`.
+
+## Qué hace cumplir el script
+
+`scripts/ship.sh` hace cumplir, entre otras cosas:
+
+- Exactamente una etiqueta de tipo en el issue, y un título de la forma `type: description` cuyo tipo coincide con la etiqueta.
+- Una rama `type/short-description` creada desde un `main` actualizado, con el tipo tomado de la etiqueta.
+- El mensaje de commit tomado del título del issue, así que sigue Conventional Commits por construcción.
+- La negativa a commitear con una identidad noreply de Anthropic, y a aceptar trailers `Co-Authored-By` y `Claude-Session`.
+- La negativa a stagear archivos de entorno, settings locales y archivos de trabajo bajo `.claude/loop/`.
+- Un cuerpo de PR cuya primera línea es `Closes #<issue>` y que no contiene atribución.
+
+## El flujo
+
+<Steps>
+
+1. La skill `ship` corre `scripts/ship.sh prepare <N> <paths>`. Lee el issue, chequea etiqueta y título, hace fetch de `origin`, crea la rama si está en `main`, valida cada ruta, commitea con el título del issue como mensaje y escribe `.claude/loop/pr-<N>.meta` con título, etiqueta, base, rama, commit y modo (`create` o `update #<pr>`).
+2. Escribe `.claude/loop/pr-<N>.body.md`. Hasta acá no se pusheó nada.
+3. Corre `scripts/ship.sh publish <N>` enseguida. Valida el cuerpo, exige la misma rama y el mismo commit sin cambios sin commitear en archivos trackeados, pushea, y crea o actualiza el PR con base, título, etiqueta, asignado y cuerpo.
+
+</Steps>
+
+No hay paso de espera entre `prepare` y `publish`.
+
+```text frame="terminal" title="publicar el issue N"
+scripts/ship.sh prepare [N] [paths]
+scripts/ship.sh publish [N]
+```
+
+## Por qué están separados
+
+`prepare` es barato de rehacer y no toca nada fuera del clon. `publish` es el único paso que escribe en GitHub, y se niega a correr si algo cambió desde `prepare`. `.claude/loop/` está en `.gitignore`, así que los archivos meta y de cuerpo nunca entran a un commit.
+
+## Commits
+
+Siguen Conventional Commits, en inglés, en modo imperativo y sin cuerpo: el razonamiento va en el PR. Los commits de la rama nunca llegan a `main`; solo llega el squash.
+
+## Fuentes
+
+- [Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue)
+- [REST API: pull requests](https://docs.github.com/en/rest/pulls/pulls)
