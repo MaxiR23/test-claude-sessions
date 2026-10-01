@@ -125,6 +125,16 @@ Starlight asides. `:::tip` (warm accent tone) for advice that saves time;
 `:::caution` (red tone) for things that break or lose work; `:::note` for
 neutral context. `:::danger` keeps Starlight's default.
 
+### Loop flow
+
+`site/src/components/LoopFlow.astro`, imported in an `.mdx` page and
+placed as `<LoopFlow />`. An ordered list of the loop's stages, with the
+two branches (`loop-path.sh` short path, `review-changes` without
+findings) written as text and the arrows hidden from screen readers. Use
+it where a page needs to show the loop's flow with its branches. Do not
+use it for linear steps: use Starlight `Steps`. Do not use it for
+commands: use the terminal block.
+
 ### Overrides
 
 - Hero with eyebrow: `site/src/components/Hero.astro`
@@ -140,6 +150,8 @@ neutral context. `:::danger` keeps Starlight's default.
 - CardGrid: one column below md, two at md and up.
 - Terminal block: scrolls horizontally inside its own frame, never the
   page. Keep lines under 60 characters.
+- Loop flow: one vertical column at all sizes, with no breakpoint.
+  Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
