@@ -30,6 +30,9 @@
 
 	--size-touch: 2.75rem;
 	--focus-ring-width: 2px;
+--size-dot: 0.3125rem;
+
+--duration-flow: 1.2s;
 
 	--sl-font: var(--font-body);
 	--sl-font-mono: var(--font-mono);

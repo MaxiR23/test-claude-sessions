@@ -75,6 +75,17 @@ created.
 | --- | --- | --- |
 | `--size-touch` | 2.75rem (44 px) | Minimum touch target |
 | `--focus-ring-width` | 2px | Focus outline width |
+| `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot diameter |
+
+### Motion
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--duration-flow` | 1.2s | One cycle of the loop flow dot animation |
+
+Every animation is declared inside
+`@media (prefers-reduced-motion: no-preference)`; under `reduce` the
+element shows its static state.
 
 ### Light theme
 
@@ -87,7 +98,9 @@ theme; fonts apply to both.
   `site/src/styles/tokens.css`. Components use tokens, or Starlight
   variables that the tokens map onto.
 - Allowed literals: `0`, `100%`, `fr`, `ch`, viewport units inside
-  `clamp()`, and the two breakpoints inside `@media`.
+  `clamp()`, the two breakpoints inside `@media`, percentage offsets as
+  keyframe selectors inside `@keyframes`, and unitless `opacity`
+  values.
 - Only exception: `site/public/favicon.svg`, a static file that cannot read
   CSS custom properties. It repeats `--color-accent` and `--color-bg` as
   literals, mirrored from the tokens.
@@ -130,7 +143,13 @@ neutral context. `:::danger` keeps Starlight's default.
 `site/src/components/LoopFlow.astro`, imported in an `.mdx` page and
 placed as `<LoopFlow />`. An ordered list of the loop's stages, with the
 two branches (`loop-path.sh` short path, `review-changes` without
-findings) written as text and the arrows hidden from screen readers. Use
+findings) written as text and their arrows hidden from screen readers. Every
+stage except the first is preceded by a connector of three
+`--size-dot` dots in the accent color, stacked in a column and
+`aria-hidden`. The dots fade in one after the other from top to bottom
+over `--duration-flow`, in a loop. Under
+`prefers-reduced-motion: reduce` they do not animate and stay visible in
+the accent color at reduced opacity. Use
 it where a page needs to show the loop's flow with its branches. Do not
 use it for linear steps: use Starlight `Steps`. Do not use it for
 commands: use the terminal block.

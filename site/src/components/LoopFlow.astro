@@ -3,33 +3,35 @@
 		<span class="node"><code>issue</code></span>
 	</li>
 	<li>
-		<span class="arrow" aria-hidden="true">↓</span>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>plan-issue</code> <span class="note">solo si no es trivial</span></span>
 	</li>
 	<li>
-		<span class="arrow" aria-hidden="true">↓</span>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>implement-issue</code> <span class="note">código + gate</span></span>
 	</li>
 	<li>
-		<span class="arrow" aria-hidden="true">↓</span>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>loop-path.sh</code></span>
 		<span class="branch"><span class="arrow" aria-hidden="true">→ </span>corto: pasa a <code>ship</code></span>
 		<span class="branch"><span class="arrow" aria-hidden="true">↓ </span>completo: sigue con <code>review-changes</code></span>
 	</li>
 	<li>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>review-changes</code></span>
 		<span class="branch"><span class="arrow" aria-hidden="true">→ </span>sin hallazgos BLOCKING ni IMPORTANT: pasa a <code>ship</code></span>
 		<span class="branch"><span class="arrow" aria-hidden="true">↓ </span>con hallazgos BLOCKING o IMPORTANT: sigue con <code>verify-findings</code></span>
 	</li>
 	<li>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>verify-findings</code></span>
 	</li>
 	<li>
-		<span class="arrow" aria-hidden="true">↓</span>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>implement-issue (modo fix)</code></span>
 	</li>
 	<li>
-		<span class="arrow" aria-hidden="true">↓</span>
+		<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 		<span class="node"><code>ship</code> <span class="note">PR, checks y merge</span></span>
 	</li>
 </ol>
@@ -76,8 +78,40 @@
 		color: var(--sl-color-text-accent);
 		font-family: var(--font-mono);
 	}
-	li > .arrow {
-		display: block;
+	.connector {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--space-1);
 		padding-inline-start: var(--space-4);
+		padding-block-end: var(--space-2);
+	}
+	.dot {
+		display: block;
+		inline-size: var(--size-dot);
+		block-size: var(--size-dot);
+		border-radius: var(--radius-full);
+		background-color: var(--sl-color-text-accent);
+		opacity: 0.6;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.dot {
+			animation: dot-flow var(--duration-flow) ease-out infinite backwards;
+		}
+		.dot:nth-child(2) {
+			animation-delay: calc(var(--duration-flow) / 6);
+		}
+		.dot:nth-child(3) {
+			animation-delay: calc(var(--duration-flow) / 3);
+		}
+	}
+	@keyframes dot-flow {
+		from,
+		to {
+			opacity: 0.25;
+		}
+		40% {
+			opacity: 1;
+		}
 	}
 </style>
