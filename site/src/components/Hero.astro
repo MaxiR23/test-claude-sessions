@@ -1,10 +1,11 @@
 ---
-// Based on Starlight 0.42.4 Hero.astro, without image branches, plus an eyebrow.
+// Based on Starlight 0.42.4 Hero.astro, without image branches, plus an eyebrow and a status line.
 import { LinkButton } from '@astrojs/starlight/components';
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, actions = [] } = data.hero || {};
-const { eyebrow } = data;
+const { eyebrow, status } = data;
+const statusChars = status ? Array.from(status.normalize('NFC')).length : 0;
 ---
 
 <div class="hero">
@@ -13,6 +14,9 @@ const { eyebrow } = data;
 			{eyebrow && <p class="eyebrow">{eyebrow}</p>}
 			<h1 id="_top" data-page-title set:html={title} />
 			{tagline && <div class="tagline" set:html={tagline} />}
+				{status && (
+					<p class="status" style={`--status-chars: ${statusChars}`}><span class="prompt" aria-hidden="true">$ </span><span class="status-text">{status}</span><span class="status-cursor" aria-hidden="true">_</span></p>
+				)}
 		</div>
 		{
 			actions.length > 0 && (
@@ -99,6 +103,105 @@ const { eyebrow } = data;
 			.actions {
 				justify-content: flex-start;
 			}
+		}
+
+		.hero {
+			--hero-enter-total: calc(var(--duration-stagger) * 4 + var(--duration-enter));
+		}
+
+		.status {
+			font-family: var(--font-mono);
+			font-size: var(--sl-text-base);
+			color: var(--sl-color-gray-3);
+			margin: 0;
+			white-space: nowrap;
+		}
+
+		.prompt {
+			white-space: pre;
+		}
+
+		.status-text {
+			display: inline-block;
+			vertical-align: bottom;
+			overflow: hidden;
+			color: var(--sl-color-text-accent);
+		}
+
+		.status-cursor {
+			color: var(--sl-color-text-accent);
+		}
+
+		@media (prefers-reduced-motion: no-preference) {
+			.copy > *,
+			.actions {
+				animation: hero-enter var(--duration-enter) ease-out backwards;
+			}
+
+			.copy > :nth-child(2) {
+				animation-delay: var(--duration-stagger);
+			}
+
+			.copy > :nth-child(3) {
+				animation-delay: calc(var(--duration-stagger) * 2);
+			}
+
+			.copy > :nth-child(4) {
+				animation-delay: calc(var(--duration-stagger) * 3);
+			}
+
+			.actions {
+				animation-delay: calc(var(--duration-stagger) * 4);
+			}
+
+			.status-text {
+				animation: status-type calc(var(--status-chars) * var(--duration-type)) steps(var(--status-chars), end) var(--hero-enter-total) backwards;
+			}
+
+			.status-cursor {
+				animation: cursor-blink var(--duration-blink) steps(1) calc(var(--hero-enter-total) + var(--status-chars) * var(--duration-type)) infinite;
+			}
+		}
+	}
+
+	.actions :global(.sl-link-button.primary:is(:hover, :focus-visible)) {
+		box-shadow: 0 var(--space-1) var(--space-4) var(--color-accent-shadow);
+	}
+
+	.actions :global(.sl-link-button.secondary:is(:hover, :focus-visible)) {
+		color: var(--sl-color-text-accent);
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.actions :global(.sl-link-button.primary),
+		.actions :global(.sl-link-button.secondary svg) {
+			transition:
+				translate var(--duration-hover) ease-out,
+				box-shadow var(--duration-hover) ease-out;
+		}
+
+		.actions :global(.sl-link-button.primary:is(:hover, :focus-visible)) {
+			translate: 0 calc(-1 * var(--space-1));
+		}
+
+		.actions :global(.sl-link-button.secondary:is(:hover, :focus-visible) svg) {
+			translate: var(--space-1) 0;
+		}
+	}
+
+	@keyframes hero-enter {
+		from {
+			opacity: 0;
+			translate: 0 var(--space-2);
+		}
+	}
+
+	@keyframes status-type {
+		from {
+			inline-size: 0;
+		}
+		to {
+			inline-size: calc(var(--status-chars) * 1ch);
 		}
 	}
 </style>

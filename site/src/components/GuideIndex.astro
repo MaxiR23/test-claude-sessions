@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Chapter {
+	dir: string;
+	title: string;
+	description: string;
+}
+interface Props {
+	chapters: Chapter[];
+}
+
+const { chapters } = Astro.props;
+const docs = await getCollection('docs', ({ data }) => !data.draft);
+const orderOf = (entry: (typeof docs)[number]) => entry.data.sidebar.order ?? Number.MAX_VALUE;
+const sections = chapters.map((chapter, index) => ({
+	...chapter,
+	number: String(index + 1).padStart(2, '0'),
+	pages: docs
+		.filter((entry) => entry.id.startsWith(`${chapter.dir}/`) && entry.id !== `${chapter.dir}/introduccion`)
+		.sort((a, b) => orderOf(a) - orderOf(b) || a.id.localeCompare(b.id, 'es')),
+}));
+---
+
+<div class="guide-index not-content">
+	{sections.map(({ number, title, description, pages }) => (
+		<section>
+			<h2><span class="number">{number}</span> <span class="title">{title}</span></h2>
+			<p class="description">{description}</p>
+			<ul>
+				{pages.map((page) => (
+					<li><a href={`/${page.id}/`}><span class="marker" aria-hidden="true">›</span>{page.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+	))}
+</div>
+
+<style>
+	.guide-index {
+		display: grid;
+		gap: var(--space-6);
+	}
+	h2 {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: var(--sl-text-xl);
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+	.number {
+		font-size: var(--sl-text-4xl);
+		line-height: 1;
+		color: var(--sl-color-text-accent);
+	}
+	.description {
+		margin: var(--space-2) 0 var(--space-3);
+		color: var(--sl-color-gray-3);
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	a {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		min-block-size: var(--size-touch);
+		color: var(--sl-color-white);
+		text-decoration: none;
+	}
+	.marker {
+		font-family: var(--font-mono);
+		color: var(--sl-color-gray-3);
+	}
+	a:is(:hover, :focus-visible),
+	a:is(:hover, :focus-visible) .marker {
+		color: var(--sl-color-text-accent);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.marker {
+			transition: translate var(--duration-hover) ease-out;
+		}
+		a:is(:hover, :focus-visible) .marker {
+			translate: var(--space-1) 0;
+		}
+	}
+	@media (min-width: 50rem) {
+		.guide-index {
+			grid-auto-flow: column;
+			grid-auto-columns: minmax(0, 1fr);
+		}
+	}
+</style>

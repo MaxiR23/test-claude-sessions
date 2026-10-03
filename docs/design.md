@@ -14,18 +14,19 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-border` | `#26282D` | Hairlines, card borders |
 | `--color-text` | `#ECEAE4` | Body and headings |
 | `--color-text-muted` | `#A3A39C` | Secondary text |
-| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, card numbers, eyebrow, focus ring |
+| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, focus ring |
 | `--color-tip` | `var(--color-accent)` | Tip aside tone (warm) |
 | `--color-tip-bg` | `color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))` | Tip aside background |
 | `--color-danger` | `#F2706A` | Caution aside tone (red) |
 | `--color-danger-bg` | `color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))` | Caution aside background |
 | `--color-accent-bg` | `color-mix(in srgb, var(--color-accent) 15%, var(--color-bg))` | Accent-low surfaces, e.g. selected sidebar item |
+| `--color-accent-shadow` | `color-mix(in srgb, var(--color-accent) 35%, transparent)` | Soft shadow of the primary hero action on hover and focus |
 
 ### Typography
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--font-mono` | `'JetBrains Mono', monospace` | Headings, site title, code, terminal block, eyebrow, card numbers |
+| `--font-mono` | `'JetBrains Mono', monospace` | Headings, site title, code, terminal block, eyebrow, guide index numbers, hero status line |
 | `--font-body` | `'IBM Plex Sans', sans-serif` | Everything else |
 
 Weights: 400 and 600 only.
@@ -83,6 +84,11 @@ created.
 | --- | --- | --- |
 | `--duration-flow` | 1.2s | One cycle of the loop flow dot animation |
 | `--duration-fade` | 0.2s | Show and hide fade of the back-to-top button |
+| `--duration-blink` | 1s | One on/off cycle of the terminal cursors (site title, hero status line) |
+| `--duration-enter` | 0.4s | Fade-and-rise of one hero element |
+| `--duration-stagger` | 0.1s | Delay between consecutive hero elements |
+| `--duration-type` | 0.06s | Time to type one character of the hero status line |
+| `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links |
 
 Every animation is declared inside
 `@media (prefers-reduced-motion: no-preference)`; under `reduce` the
@@ -125,13 +131,22 @@ claude --cloud "..."
 ```
 ````
 
-### Card
+### Guide index
 
-Starlight `Card` inside `CardGrid`, imported from
-`@astrojs/starlight/components` in an `.mdx` page. Numbered cards put
-`<span class="card-number">01</span>` at the start of the `title`. Use it
-for parallel entry points, such as guide chapters. Do not use it for
-sequential steps: use Starlight `Steps`.
+`site/src/components/GuideIndex.astro`, imported in `index.mdx` and
+placed with a `chapters` prop (folder, title, description per chapter).
+One column per chapter, without boxes: the number (`01`, `02`, from the
+chapter's position) at `--sl-text-4xl` in the accent mono font, the title,
+the description in the muted color, and the chapter's pages as links
+preceded by a `›` marker. The page list is generated at build time from
+the docs collection: every non-draft page under the folder except
+`introduccion`, ordered by `sidebar.order` like the sidebar, with the page
+`title` as text; adding, renaming or reordering a page updates it with no
+edit to the home. Each link is at least `--size-touch` tall. On hover and
+focus a link turns to the accent color and its marker moves `--space-1` to
+the right over `--duration-hover`; under reduced motion only the color
+changes. Use it for the home's chapter entry points; do not use it for
+sequential steps (use Starlight `Steps`).
 
 ### Callout
 
@@ -157,8 +172,21 @@ commands: use the terminal block.
 
 ### Overrides
 
-- Hero with eyebrow: `site/src/components/Hero.astro`
-- Site title (`~/name_` form): `site/src/components/SiteTitle.astro`
+- Hero with eyebrow: `site/src/components/Hero.astro`. The eyebrow, title,
+  tagline, status line and actions fade in and rise `--space-2`, one after
+  the other `--duration-stagger` apart, each over `--duration-enter`, once
+  on load (0.8 s in total). The status line comes from the `status`
+  frontmatter field: `$ ` in the muted color, the text in the accent color
+  typed one character per `--duration-type` after the entrance, then a `_`
+  that blinks like the site title cursor. On hover and focus the primary
+  action rises `--space-1` with a `--color-accent-shadow` shadow, and the
+  secondary action turns accent with its arrow moving `--space-1` to the
+  right, over `--duration-hover`. Under reduced motion the hero shows at
+  once with the status complete and still, the primary keeps only the
+  shadow and the secondary only the color.
+- Site title (`~/name_` form): `site/src/components/SiteTitle.astro`. The
+  `_` cursor blinks once per `--duration-blink` (shared `cursor-blink`
+  keyframe in `tokens.css`); still under reduced motion.
 - Footer with back-to-top button: `site/src/components/Footer.astro`. The
   button is hidden at the top of the page and appears once the page has
   been scrolled down by more than half the viewport height; scrolling back
@@ -179,7 +207,7 @@ commands: use the terminal block.
   others.
 - Mobile first, minimum width 360 px with no horizontal scroll.
 - Hero: stacks centered below md, aligns start at md and up.
-- CardGrid: one column below md, two at md and up.
+- Guide index: one column below md, one column per chapter at md and up.
 - Terminal block: scrolls horizontally inside its own frame, never the
   page. Keep lines under 60 characters.
 - Loop flow: one vertical column at all sizes, with no breakpoint.
@@ -205,7 +233,7 @@ commands: use the terminal block.
   | danger on danger bg | 5.22 |
   | text on danger bg | 12.48 |
 
-- Touch targets at least `--size-touch` (44 px): hero actions and the
+- Touch targets at least `--size-touch` (44 px): hero actions, guide index links and the
   back-to-top button.
 - Visible focus: every focusable element shows a `--focus-ring-width` solid
   `--color-accent` outline on `:focus-visible`.

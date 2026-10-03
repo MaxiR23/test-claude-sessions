@@ -26,4 +26,9 @@ const handle = `~/${siteTitle.toLocaleLowerCase('es').replaceAll(' ', '-')}`;
 	.cursor {
 		color: var(--sl-color-text-accent);
 	}
+	@media (prefers-reduced-motion: no-preference) {
+		.cursor {
+			animation: cursor-blink var(--duration-blink) steps(1) infinite;
+		}
+	}
 </style>

@@ -10,6 +10,7 @@
 	--color-danger: #f2706a;
 	--color-danger-bg: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
 	--color-accent-bg: color-mix(in srgb, var(--color-accent) 15%, var(--color-bg));
+	--color-accent-shadow: color-mix(in srgb, var(--color-accent) 35%, transparent);
 
 	--font-mono: 'JetBrains Mono', monospace;
 	--font-body: 'IBM Plex Sans', sans-serif;
@@ -34,6 +35,11 @@
 
 --duration-flow: 1.2s;
 	--duration-fade: 0.2s;
+	--duration-blink: 1s;
+	--duration-enter: 0.4s;
+	--duration-stagger: 0.1s;
+	--duration-type: 0.06s;
+	--duration-hover: 0.15s;
 
 	--sl-font: var(--font-body);
 	--sl-font-mono: var(--font-mono);
@@ -57,8 +63,7 @@
 }
 
 :is(.sl-markdown-content, .hero) :is(h1, h2, h3, h4, h5, h6),
-h1#_top,
-.card .title {
+h1#_top {
 	font-family: var(--font-mono);
 }
 
@@ -74,11 +79,6 @@ h1#_top,
 	background-color: var(--color-danger-bg);
 }
 
-.card-number {
-	font-family: var(--font-mono);
-	color: var(--sl-color-text-accent);
-}
-
 .sl-link-button {
 	min-block-size: var(--size-touch);
 }
@@ -86,4 +86,10 @@ h1#_top,
 :focus-visible {
 	outline: var(--focus-ring-width) solid var(--sl-color-text-accent);
 	outline-offset: var(--space-1);
+}
+
+@keyframes cursor-blink {
+	50% {
+		opacity: 0;
+	}
 }
