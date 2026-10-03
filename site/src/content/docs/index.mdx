@@ -3,9 +3,10 @@ title: Bitácora agéntica
 description: Cómo configuré sesiones de Claude Code en la nube para que resuelvan issues de punta a punta.
 template: splash
 eyebrow: WIKI DE ESTUDIO · CLAUDE CODE
+status: En construcción
 hero:
   title: Lo que voy aprendiendo mientras los agentes trabajan.
-  tagline: Acá anoto cómo fui armando sesiones de Claude Code en la nube, siguiendo las reglas del repo. Todavía en construcción.
+  tagline: Acá anoto cómo fui armando sesiones de Claude Code en la nube, siguiendo las reglas del repo.
   actions:
     - text: Empezar la guía
       link: /configuracion/introduccion/
@@ -13,18 +14,17 @@ hero:
     - text: Ver el workflow
       link: /workflow/introduccion/
       variant: secondary
+      icon: right-arrow
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import GuideIndex from '../../components/GuideIndex.astro';
 
-<CardGrid>
-  <Card title='<span class="card-number">01</span> Configuración'>
-    Cómo preparar el entorno de nube, la identidad y las reglas del repo.
-  </Card>
-  <Card title='<span class="card-number">02</span> Workflow'>
-    El loop de agentes que lleva un issue de la idea al merge.
-  </Card>
-</CardGrid>
+<GuideIndex
+  chapters={[
+    { dir: 'configuracion', title: 'Configuración', description: 'Cómo preparar el entorno de nube, la identidad y las reglas del repo.' },
+    { dir: 'workflow', title: 'Workflow', description: 'El loop de agentes que lleva un issue de la idea al merge.' },
+  ]}
+/>
 
 ```text frame="terminal" title="sesión en la nube"
 $ claude --cloud "Resolve issue #24"
