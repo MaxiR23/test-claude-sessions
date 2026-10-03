@@ -82,6 +82,7 @@ created.
 | Token | Value | Role |
 | --- | --- | --- |
 | `--duration-flow` | 1.2s | One cycle of the loop flow dot animation |
+| `--duration-fade` | 0.2s | Show and hide fade of the back-to-top button |
 
 Every animation is declared inside
 `@media (prefers-reduced-motion: no-preference)`; under `reduce` the
@@ -158,7 +159,14 @@ commands: use the terminal block.
 
 - Hero with eyebrow: `site/src/components/Hero.astro`
 - Site title (`~/name_` form): `site/src/components/SiteTitle.astro`
-- Footer with back-to-top button: `site/src/components/Footer.astro`
+- Footer with back-to-top button: `site/src/components/Footer.astro`. The
+  button is hidden at the top of the page and appears once the page has
+  been scrolled down by more than half the viewport height; scrolling back
+  above that point hides it again. While hidden it uses
+  `visibility: hidden`, so it is not clickable, not reachable with Tab and
+  not exposed to screen readers. It fades in and out over
+  `--duration-fade`; under `prefers-reduced-motion: reduce` it shows and
+  hides without a transition. Without JavaScript it stays visible.
 
 ## 4. Responsive rules
 
