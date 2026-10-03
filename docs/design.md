@@ -167,6 +167,11 @@ commands: use the terminal block.
   not exposed to screen readers. It fades in and out over
   `--duration-fade`; under `prefers-reduced-motion: reduce` it shows and
   hides without a transition. Without JavaScript it stays visible.
+  Clicking it (or pressing Enter on it) scrolls smoothly to the page title
+  (`#_top`); under `prefers-reduced-motion: reduce` it jumps there at once.
+  Only this button scrolls smoothly: there is no site-wide
+  `scroll-behavior`, so other in-page links still jump. Without JavaScript
+  the link jumps to `#_top`.
 
 ## 4. Responsive rules
 

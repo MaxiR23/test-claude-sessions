@@ -21,6 +21,14 @@ import { Icon } from '@astrojs/starlight/components';
 		button.setAttribute('data-ready', '');
 		window.addEventListener('scroll', update, { passive: true });
 		window.addEventListener('resize', update, { passive: true });
+		// Smooth scroll only for this button: let the native #_top navigation
+		// run (hash, focus starting point) with scroll-behavior set for one frame.
+		button.addEventListener('click', () => {
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+			const root = document.documentElement;
+			root.style.scrollBehavior = 'smooth';
+			requestAnimationFrame(() => root.style.removeProperty('scroll-behavior'));
+		});
 	})();
 </script>
 
