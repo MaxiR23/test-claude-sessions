@@ -33,6 +33,7 @@
 --size-dot: 0.3125rem;
 
 --duration-flow: 1.2s;
+	--duration-fade: 0.2s;
 
 	--sl-font: var(--font-body);
 	--sl-font-mono: var(--font-mono);

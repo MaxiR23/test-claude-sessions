@@ -7,6 +7,22 @@ import { Icon } from '@astrojs/starlight/components';
 <a href="#_top" class="back-to-top" aria-label="Volver arriba">
 	<Icon name="up-arrow" />
 </a>
+<script is:inline>
+	(() => {
+		const button = document.querySelector('.back-to-top');
+		if (!button) return;
+		const update = () => {
+			button.toggleAttribute('data-hidden', window.scrollY <= window.innerHeight / 2);
+		};
+		update();
+		// Flush the initial hidden state, then enable the transition via data-ready,
+		// so the first hide does not fade out.
+		getComputedStyle(button).opacity;
+		button.setAttribute('data-ready', '');
+		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('resize', update, { passive: true });
+	})();
+</script>
 
 <style>
 	.back-to-top {
@@ -22,6 +38,17 @@ import { Icon } from '@astrojs/starlight/components';
 		background: var(--sl-color-gray-6);
 		color: var(--sl-color-text-accent);
 		z-index: var(--sl-z-index-toc);
+	}
+	.back-to-top[data-hidden] {
+		opacity: 0;
+		visibility: hidden;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.back-to-top[data-ready] {
+			transition:
+				opacity var(--duration-fade) ease,
+				visibility var(--duration-fade);
+		}
 	}
 	@media print {
 		.back-to-top {
