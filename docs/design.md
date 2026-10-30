@@ -26,8 +26,9 @@ Visual rules for the site in `site/`. The tokens below mirror
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--font-mono` | `'JetBrains Mono', monospace` | Headings, site title, code, terminal block, eyebrow, guide index numbers, hero status line |
-| `--font-body` | `'IBM Plex Sans', sans-serif` | Everything else |
+| `--font-heading` | `'Space Grotesk', sans-serif` | Page titles, markdown headings, hero title, eyebrow, guide index numbers and chapter titles |
+| `--font-mono` | `'JetBrains Mono', monospace` | Code, terminal block, site title, hero status line, loop flow nodes, guide index link markers, loop flow arrows |
+| `--font-body` | `'Inter', sans-serif` | Everything else |
 
 Weights: 400 and 600 only.
 
@@ -136,7 +137,7 @@ claude --cloud "..."
 `site/src/components/GuideIndex.astro`, imported in `index.mdx` and
 placed with a `chapters` prop (folder, title, description per chapter).
 One column per chapter, without boxes: the number (`01`, `02`, from the
-chapter's position) at `--sl-text-4xl` in the accent mono font, the title,
+chapter's position) at `--sl-text-4xl` in the accent heading font, the title,
 the description in the muted color, and the chapter's pages as links
 preceded by a `›` marker. The page list is generated at build time from
 the docs collection: every non-draft page under the folder except

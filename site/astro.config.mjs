@@ -10,8 +10,10 @@ export default defineConfig({
 				root: { label: 'Español', lang: 'es' },
 			},
 			customCss: [
-				'@fontsource/ibm-plex-sans/400.css',
-				'@fontsource/ibm-plex-sans/600.css',
+				'@fontsource/space-grotesk/400.css',
+				'@fontsource/space-grotesk/600.css',
+				'@fontsource/inter/400.css',
+				'@fontsource/inter/600.css',
 				'@fontsource/jetbrains-mono/400.css',
 				'@fontsource/jetbrains-mono/600.css',
 				'./src/styles/tokens.css',
