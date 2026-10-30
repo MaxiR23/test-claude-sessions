@@ -12,8 +12,9 @@
 	--color-accent-bg: color-mix(in srgb, var(--color-accent) 15%, var(--color-bg));
 	--color-accent-shadow: color-mix(in srgb, var(--color-accent) 35%, transparent);
 
+	--font-heading: 'Space Grotesk', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
-	--font-body: 'IBM Plex Sans', sans-serif;
+	--font-body: 'Inter', sans-serif;
 
 	--space-1: 0.25rem;
 	--space-2: 0.5rem;
@@ -64,7 +65,7 @@
 
 :is(.sl-markdown-content, .hero) :is(h1, h2, h3, h4, h5, h6),
 h1#_top {
-	font-family: var(--font-mono);
+	font-family: var(--font-heading);
 }
 
 :root[data-theme='dark'] .starlight-aside--tip {
