@@ -95,6 +95,12 @@ h1#_top {
 	outline-offset: var(--space-1);
 }
 
+@media (min-width: 50rem) {
+	starlight-theme-select select {
+		--sl-select-width: calc(9ch + var(--space-7));
+	}
+}
+
 @keyframes cursor-blink {
 	50% {
 		opacity: 0;

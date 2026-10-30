@@ -253,6 +253,7 @@ terminal block.
 - Loop flow: one vertical column at all sizes, with no breakpoint.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
+- Theme select (Starlight's, header): at md and up its width is set by overriding `--sl-select-width` on the select to `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish label ("Automático") shows in full with its icon and caret. Below md it keeps Starlight's width.
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
