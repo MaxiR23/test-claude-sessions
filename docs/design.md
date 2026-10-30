@@ -11,7 +11,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | --- | --- | --- |
 | `--color-bg` | `#0F1012` | Page background |
 | `--color-surface` | `#17191D` | Nav, sidebar, cards, terminal |
-| `--color-border` | `#26282D` | Hairlines, card borders |
+| `--color-border` | `#26282D` | Hairlines, card borders, loop terminal `↳` of stages not yet done |
 | `--color-text` | `#ECEAE4` | Body and headings |
 | `--color-text-muted` | `#A3A39C` | Secondary text |
 | `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, loop terminal cursor, markers and done stages, focus ring |
@@ -191,10 +191,17 @@ cursor blinking over `--duration-blink`. Stages: they appear
 spinner at `--duration-run-frame` per frame for a random time between
 `--duration-run-stage-min` and `--duration-run-stage-max`, then a `✓`,
 the name in the text color and the description in the accent. Then the
-final line, a `--duration-run-pause` pause and the repeat. It runs only
+final line, a `--duration-run-pause` pause and the repeat. Layout: at md
+and up each stage is one line: the marker, the name padded to a column,
+and the description. Below md each stage takes two lines: the marker and
+the name, then the description aligned with the name and preceded by an
+`aria-hidden` `↳` in the border color, which turns muted once the stage
+is done. The name is not padded. Below md the text is `--sl-text-code-sm`
+and the body padding `--space-2` `--space-3`. At md and up they are
+`--sl-text-code` and `--space-3` `--space-4`. It runs only
 while visible on screen and the tab is visible. Accessibility: the text
-is static in the DOM, the prompt, cursor and markers are `aria-hidden`,
-and nothing is announced per cycle. Under reduced motion or without
+is static in the DOM, the prompt, cursor, markers, `↳` and name padding
+are `aria-hidden`, and nothing is announced per cycle. Under reduced motion or without
 JavaScript it shows the final state at once and nothing moves. Use it
 only for the home's run; for other commands and transcripts use the
 terminal block.
@@ -239,8 +246,10 @@ terminal block.
 - Guide index: one column below md, one column per chapter at md and up.
 - Terminal block: scrolls horizontally inside its own frame, never the
   page. Keep lines under 60 characters.
-- Loop terminal: scrolls horizontally inside its own frame, never the
-  page. Keep lines under 60 characters.
+- Loop terminal: fits its width with no horizontal scroll down to 360 px.
+  Below md the description drops to its own line under the name; at md
+  and up each stage is one line with the name padded to a column. Keep
+  lines under 40 characters below md.
 - Loop flow: one vertical column at all sizes, with no breakpoint.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.

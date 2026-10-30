@@ -17,7 +17,7 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 		<p class="line command-line"><span class="prompt" aria-hidden="true">$ </span><span class="command">{command}</span><span class="cursor" aria-hidden="true">_</span></p>
 		<ol class="stages">
 			{stages.map(({ name, description }) => (
-				<li class="line stage"><span class="marker" aria-hidden="true">✓</span><span class="name">{name.padEnd(column)}</span><span class="description">{description}</span></li>
+				<li class="line stage"><span class="marker" aria-hidden="true">✓</span><span class="name">{name}</span><span class="pad" aria-hidden="true">{' '.repeat(column - name.length - 1)}</span>{' '}<span class="arrow" aria-hidden="true">↳</span><span class="description">{description}</span></li>
 			))}
 		</ol>
 		<p class="line final"><span class="marker" aria-hidden="true">✓</span>issue #24 cerrado y mergeado</p>
@@ -57,9 +57,9 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 	}
 	.body {
 		overflow-x: auto;
-		padding: var(--space-3) var(--space-4);
+		padding: var(--space-2) var(--space-3);
 		font-family: var(--font-mono);
-		font-size: var(--sl-text-code);
+		font-size: var(--sl-text-code-sm);
 		line-height: var(--sl-line-height);
 		color: var(--sl-color-white);
 	}
@@ -67,6 +67,19 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 		display: block;
 		margin: 0;
 		white-space: pre;
+	}
+	.stage {
+		display: grid;
+		grid-template-columns: 2ch minmax(0, 1fr);
+	}
+	.pad {
+		display: none;
+	}
+	.arrow {
+		color: var(--sl-color-gray-3);
+	}
+	.stage .description {
+		white-space: normal;
 	}
 	.stages {
 		list-style: none;
@@ -114,6 +127,9 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 	.loop-terminal[data-animated] .stage[data-state='pending'] .marker {
 		color: var(--sl-color-gray-3);
 	}
+	.loop-terminal[data-animated] .stage:not([data-state='done']) .arrow {
+		color: var(--sl-color-gray-5);
+	}
 	@media (prefers-reduced-motion: no-preference) {
 		.loop-terminal[data-animated] :is(.stage, .final) {
 			transition:
@@ -122,6 +138,24 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 		}
 		.loop-terminal[data-animated] .cursor {
 			animation: cursor-blink var(--duration-blink) steps(1) infinite;
+		}
+	}
+	@media (min-width: 50rem) {
+		.body {
+			padding: var(--space-3) var(--space-4);
+			font-size: var(--sl-text-code);
+		}
+		.stage {
+			display: block;
+		}
+		.pad {
+			display: inline;
+		}
+		.arrow {
+			display: none;
+		}
+		.stage .description {
+			white-space: pre;
 		}
 	}
 </style>
