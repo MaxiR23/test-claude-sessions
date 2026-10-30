@@ -14,7 +14,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-border` | `#26282D` | Hairlines, card borders |
 | `--color-text` | `#ECEAE4` | Body and headings |
 | `--color-text-muted` | `#A3A39C` | Secondary text |
-| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, focus ring |
+| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, loop terminal cursor, markers and done stages, focus ring |
 | `--color-tip` | `var(--color-accent)` | Tip aside tone (warm) |
 | `--color-tip-bg` | `color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))` | Tip aside background |
 | `--color-danger` | `#F2706A` | Caution aside tone (red) |
@@ -27,7 +27,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | Token | Value | Role |
 | --- | --- | --- |
 | `--font-heading` | `'Space Grotesk', sans-serif` | Page titles, markdown headings, hero title, eyebrow, guide index numbers and chapter titles |
-| `--font-mono` | `'JetBrains Mono', monospace` | Code, terminal block, site title, hero status line, loop flow nodes, guide index link markers, loop flow arrows |
+| `--font-mono` | `'JetBrains Mono', monospace` | Code, terminal block, site title, hero status line, loop flow nodes, guide index link markers, loop flow arrows, loop terminal |
 | `--font-body` | `'Inter', sans-serif` | Everything else |
 
 Weights: 400 and 600 only.
@@ -77,7 +77,7 @@ created.
 | --- | --- | --- |
 | `--size-touch` | 2.75rem (44 px) | Minimum touch target |
 | `--focus-ring-width` | 2px | Focus outline width |
-| `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot diameter |
+| `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot and loop terminal title bar dot diameter |
 
 ### Motion
 
@@ -85,11 +85,17 @@ created.
 | --- | --- | --- |
 | `--duration-flow` | 1.2s | One cycle of the loop flow dot animation |
 | `--duration-fade` | 0.2s | Show and hide fade of the back-to-top button |
-| `--duration-blink` | 1s | One on/off cycle of the terminal cursors (site title, hero status line) |
-| `--duration-enter` | 0.4s | Fade-and-rise of one hero element |
+| `--duration-blink` | 1s | One on/off cycle of the terminal cursors (site title, hero status line, loop terminal) |
+| `--duration-enter` | 0.4s | Fade-and-rise of one hero element or one loop terminal line |
 | `--duration-stagger` | 0.1s | Delay between consecutive hero elements |
-| `--duration-type` | 0.06s | Time to type one character of the hero status line |
+| `--duration-type` | 0.06s | Time to type one character of the hero status line and the loop terminal command |
 | `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links |
+| `--duration-run-start` | 0.5s | Pause before the loop terminal starts typing |
+| `--duration-run-appear` | 0.22s | Delay between consecutive loop terminal stages appearing |
+| `--duration-run-frame` | 0.08s | One frame of the loop terminal spinner |
+| `--duration-run-stage-min` | 0.7s | Shortest spinner time of one loop terminal stage |
+| `--duration-run-stage-max` | 1.4s | Longest spinner time of one loop terminal stage |
+| `--duration-run-pause` | 2.6s | Pause after the final line before the loop terminal repeats |
 
 Every animation is declared inside
 `@media (prefers-reduced-motion: no-preference)`; under `reduce` the
@@ -171,6 +177,28 @@ it where a page needs to show the loop's flow with its branches. Do not
 use it for linear steps: use Starlight `Steps`. Do not use it for
 commands: use the terminal block.
 
+### Loop terminal
+
+`site/src/components/LoopTerminal.astro`, imported in `index.mdx` and
+placed as `<LoopTerminal />`. A terminal frame like the terminal block
+(surface body, border, title bar with three muted `--size-dot` dots and
+the centered title `sesión en la nube`) that shows one loop run for
+issue #24. The run has three phases. Typing: after `--duration-run-start`
+the command is typed at `--duration-type` per character, with the `_`
+cursor blinking over `--duration-blink`. Stages: they appear
+`--duration-run-appear` apart, fading in and rising `--space-2` over
+`--duration-enter`, muted with a `·`. Running: each stage shows a braille
+spinner at `--duration-run-frame` per frame for a random time between
+`--duration-run-stage-min` and `--duration-run-stage-max`, then a `✓`,
+the name in the text color and the description in the accent. Then the
+final line, a `--duration-run-pause` pause and the repeat. It runs only
+while visible on screen and the tab is visible. Accessibility: the text
+is static in the DOM, the prompt, cursor and markers are `aria-hidden`,
+and nothing is announced per cycle. Under reduced motion or without
+JavaScript it shows the final state at once and nothing moves. Use it
+only for the home's run; for other commands and transcripts use the
+terminal block.
+
 ### Overrides
 
 - Hero with eyebrow: `site/src/components/Hero.astro`. The eyebrow, title,
@@ -210,6 +238,8 @@ commands: use the terminal block.
 - Hero: stacks centered below md, aligns start at md and up.
 - Guide index: one column below md, one column per chapter at md and up.
 - Terminal block: scrolls horizontally inside its own frame, never the
+  page. Keep lines under 60 characters.
+- Loop terminal: scrolls horizontally inside its own frame, never the
   page. Keep lines under 60 characters.
 - Loop flow: one vertical column at all sizes, with no breakpoint.
   Node text wraps inside its box and never scrolls the page.

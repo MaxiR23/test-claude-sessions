@@ -18,6 +18,7 @@ hero:
 ---
 
 import GuideIndex from '../../components/GuideIndex.astro';
+import LoopTerminal from '../../components/LoopTerminal.astro';
 
 <GuideIndex
   chapters={[
@@ -26,13 +27,4 @@ import GuideIndex from '../../components/GuideIndex.astro';
   ]}
 />
 
-```text frame="terminal" title="sesión en la nube"
-$ claude --cloud "Resolve issue #24"
-
-plan-issue       -> plan (si hace falta)
-implement-issue  -> código y gate
-loop-path.sh     -> camino corto o completo
-review-changes   -> revisión
-verify-findings  -> confirma hallazgos
-ship             -> PR, checks y merge
-```
+<LoopTerminal />

@@ -1,0 +1,209 @@
+---
+const command = 'claude --cloud "Resolve issue #24"';
+const stages = [
+	{ name: 'plan-issue', description: 'arma el plan' },
+	{ name: 'implement-issue', description: 'escribe el código y corre el build' },
+	{ name: 'loop-path.sh', description: 'hay código: va a revisión' },
+	{ name: 'review-changes', description: 'revisa el diff' },
+	{ name: 'verify-findings', description: 'confirma los hallazgos' },
+	{ name: 'ship', description: 'PR, checks y merge' },
+];
+const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
+---
+
+<div class="loop-terminal not-content">
+	<div class="header"><span class="dots" aria-hidden="true"><span></span><span></span><span></span></span><span class="title" id="loop-terminal-title">sesión en la nube</span></div>
+	<div class="body" role="region" aria-labelledby="loop-terminal-title" tabindex="0">
+		<p class="line command-line"><span class="prompt" aria-hidden="true">$ </span><span class="command">{command}</span><span class="cursor" aria-hidden="true">_</span></p>
+		<ol class="stages">
+			{stages.map(({ name, description }) => (
+				<li class="line stage"><span class="marker" aria-hidden="true">✓</span><span class="name">{name.padEnd(column)}</span><span class="description">{description}</span></li>
+			))}
+		</ol>
+		<p class="line final"><span class="marker" aria-hidden="true">✓</span>issue #24 cerrado y mergeado</p>
+	</div>
+</div>
+
+<style>
+	.loop-terminal {
+		border: var(--border);
+		background: var(--sl-color-gray-6);
+		max-inline-size: 100%;
+		min-inline-size: 0;
+	}
+	.header {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-block: var(--space-1);
+		background: var(--sl-color-black);
+		border-block-end: var(--border);
+		font-family: var(--font-body);
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-white);
+	}
+	.dots {
+		position: absolute;
+		inset-inline-start: var(--space-4);
+		display: flex;
+		gap: var(--space-1);
+	}
+	.dots span {
+		inline-size: var(--size-dot);
+		block-size: var(--size-dot);
+		border-radius: var(--radius-full);
+		background-color: var(--sl-color-gray-3);
+	}
+	.body {
+		overflow-x: auto;
+		padding: var(--space-3) var(--space-4);
+		font-family: var(--font-mono);
+		font-size: var(--sl-text-code);
+		line-height: var(--sl-line-height);
+		color: var(--sl-color-white);
+	}
+	.line {
+		display: block;
+		margin: 0;
+		white-space: pre;
+	}
+	.stages {
+		list-style: none;
+		padding: 0;
+		margin: var(--space-5) 0 0;
+	}
+	.final {
+		margin-block-start: var(--space-5);
+		color: var(--sl-color-text-accent);
+	}
+	.prompt {
+		color: var(--sl-color-gray-3);
+	}
+	.cursor {
+		color: var(--sl-color-text-accent);
+	}
+	.marker {
+		display: inline-block;
+		inline-size: 2ch;
+		color: var(--sl-color-text-accent);
+	}
+	.name {
+		color: var(--sl-color-white);
+	}
+	.description {
+		color: var(--sl-color-text-accent);
+	}
+	.loop-terminal[data-animated] .command {
+		display: inline-block;
+		vertical-align: bottom;
+		overflow: hidden;
+		inline-size: calc(var(--typed, 0) * 1ch);
+	}
+	.loop-terminal[data-animated] .stage[data-state='hidden'],
+	.loop-terminal[data-animated] .final[data-state='hidden'] {
+		opacity: 0;
+		translate: 0 var(--space-2);
+	}
+	.loop-terminal[data-animated] .stage:is([data-state='pending'], [data-state='running']) :is(.name, .description) {
+		color: var(--sl-color-gray-3);
+	}
+	.loop-terminal[data-animated] .stage[data-state='pending'] {
+		opacity: 0.6;
+	}
+	.loop-terminal[data-animated] .stage[data-state='pending'] .marker {
+		color: var(--sl-color-gray-3);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.loop-terminal[data-animated] :is(.stage, .final) {
+			transition:
+				opacity var(--duration-enter) ease-out,
+				translate var(--duration-enter) ease-out;
+		}
+		.loop-terminal[data-animated] .cursor {
+			animation: cursor-blink var(--duration-blink) steps(1) infinite;
+		}
+	}
+</style>
+
+<script is:inline>
+	(() => {
+		const root = document.querySelector('.loop-terminal');
+		if (!root) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const css = getComputedStyle(root);
+		const ms = (name) => {
+			const value = css.getPropertyValue(name).trim();
+			return value.endsWith('ms') ? parseFloat(value) : parseFloat(value) * 1000;
+		};
+		const start = ms('--duration-run-start');
+		const type = ms('--duration-type');
+		const appear = ms('--duration-run-appear');
+		const frame = ms('--duration-run-frame');
+		const stageMin = ms('--duration-run-stage-min');
+		const stageMax = ms('--duration-run-stage-max');
+		const pause = ms('--duration-run-pause');
+		const command = root.querySelector('.command');
+		const stages = [...root.querySelectorAll('.stage')];
+		const final = root.querySelector('.final');
+		const frames = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+		const setMarker = (line, text) => {
+			line.querySelector('.marker').textContent = text;
+		};
+		function* run() {
+			while (true) {
+				command.style.setProperty('--typed', 0);
+				for (const line of [...stages, final]) line.setAttribute('data-state', 'hidden');
+				yield start;
+				const length = command.textContent.length;
+				for (let i = 1; i <= length; i++) {
+					command.style.setProperty('--typed', i);
+					yield type;
+				}
+				for (const stage of stages) {
+					stage.setAttribute('data-state', 'pending');
+					setMarker(stage, '·');
+					yield appear;
+				}
+				for (const stage of stages) {
+					stage.setAttribute('data-state', 'running');
+					const stageTime = stageMin + Math.random() * (stageMax - stageMin);
+					let elapsed = 0;
+					let k = 0;
+					while (elapsed < stageTime) {
+						setMarker(stage, frames[k % frames.length]);
+						k++;
+						elapsed += frame;
+						yield frame;
+					}
+					stage.setAttribute('data-state', 'done');
+					setMarker(stage, '✓');
+				}
+				final.setAttribute('data-state', 'done');
+				yield pause;
+			}
+		}
+		const it = run();
+		root.setAttribute('data-animated', '');
+		let nextDelay = it.next().value;
+		let timer = null;
+		let visible = false;
+		const tick = () => {
+			nextDelay = it.next().value;
+			timer = setTimeout(tick, nextDelay);
+		};
+		const sync = () => {
+			if (visible && !document.hidden) {
+				if (timer === null) timer = setTimeout(tick, nextDelay);
+			} else {
+				clearTimeout(timer);
+				timer = null;
+			}
+		};
+		new IntersectionObserver((entries) => {
+			visible = entries[entries.length - 1].isIntersecting;
+			sync();
+		}).observe(root);
+		document.addEventListener('visibilitychange', sync);
+	})();
+</script>
