@@ -94,6 +94,7 @@ const stages = [
 const parts = (text) => text.split('`'); // odd indexes are code
 ---
 
+
 <ol class="loop-flow not-content" aria-label="Flujo del loop">
 	{
 		stages.map((stage, i) => (
@@ -101,19 +102,26 @@ const parts = (text) => text.split('`'); // odd indexes are code
 				{i > 0 && (
 					<span class="connector" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
 				)}
-				<div class="node">
-					<button type="button" class="toggle" id={`loop-flow-toggle-${i}`} aria-expanded="true" aria-controls={`loop-flow-panel-${i}`}>
+				<details class="node">
+					<summary class="toggle">
 						<span class="head">
 							<code class="name">{stage.name}</code>
 							{stage.note && <span class="note">{stage.note}</span>}
 						</span>
 						<span class="chip">{stage.tag}</span>
 						<span class="chevron" aria-hidden="true"><Icon name="down-caret" /></span>
-					</button>
-					{stage.steps && (
-						<span class="steps"><code class="chip">prepare</code><span class="sep" aria-hidden="true">›</span><code class="chip">publish</code></span>
-					)}
-					<div class="panel" id={`loop-flow-panel-${i}`} role="region" aria-labelledby={`loop-flow-toggle-${i}`}>
+						{stage.steps && (
+							<span class="steps">
+								{stage.steps.map((step, j) => (
+									<Fragment>
+										{j > 0 && <span class="sep" aria-hidden="true">›</span>}
+										<code class="chip">{step}</code>
+									</Fragment>
+								))}
+							</span>
+						)}
+					</summary>
+					<div class="panel">
 						<div class="panel-clip">
 							<div class="panel-body">
 								{stage.lines.map((line) => (
@@ -123,7 +131,7 @@ const parts = (text) => text.split('`'); // odd indexes are code
 							</div>
 						</div>
 					</div>
-				</div>
+				</details>
 				{stage.branches?.map((b) => (
 					<span class="branch"><span class="arrow" aria-hidden="true">{b.arrow}</span>{parts(b.text).map((part, j) => (j % 2 === 1 ? <code>{part}</code> : part))}</span>
 				))}
@@ -141,90 +149,109 @@ const parts = (text) => text.split('`'); // odd indexes are code
 			const value = css.getPropertyValue(name).trim();
 			return value.endsWith('ms') ? parseFloat(value) : parseFloat(value) * 1000;
 		};
-		const typeDelay = ms('--duration-type-detail');
+		const expand = ms('--duration-expand');
+		const typeStart = ms('--duration-type-start');
+		const typeChar = ms('--duration-type-detail');
+		const typeGap = ms('--duration-type-gap');
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-		const nodes = [...root.querySelectorAll('.node')];
-		let timer = null;
+		const stages = [...root.querySelectorAll('details.node')];
+		const runs = new WeakMap();
+		const later = (fn, delay) => setTimeout(fn, delay);
 
-		const restore = (node) => {
-			clearTimeout(timer);
-			timer = null;
-			node.querySelectorAll('.untyped').forEach((span) => {
-				const prev = span.previousSibling;
-				if (prev && prev.nodeType === 3) prev.data += span.textContent;
-				span.remove();
+		// Puts every line back to its original markup, fully visible.
+		const restore = (stage) => {
+			runs.set(stage, (runs.get(stage) || 0) + 1);
+			stage.querySelectorAll('.text').forEach((text) => {
+				if (text.dataset.html !== undefined) text.innerHTML = text.dataset.html;
 			});
-			node.querySelectorAll('.line').forEach((line) => line.removeAttribute('data-pending'));
-			node.removeAttribute('data-typed');
+			stage.querySelectorAll('.line').forEach((line) => line.removeAttribute('data-pending'));
+			stage.querySelector('.more').removeAttribute('data-pending');
 		};
-		const finish = (node) => {
-			restore(node);
-			node.setAttribute('data-typed', '');
-		};
-		const type = (node) => {
-			if (reduce.matches) {
-				finish(node);
-				return;
-			}
-			const lines = [...node.querySelectorAll('.line')];
-			lines.forEach((line) => line.setAttribute('data-pending', ''));
+
+		// Empties every line, then types them one after the other as plain text and
+		// puts back each line's markup as soon as it is typed.
+		const type = (stage) => {
+			const token = (runs.get(stage) || 0) + 1;
+			runs.set(stage, token);
+			const alive = () => runs.get(stage) === token;
+			const lines = [...stage.querySelectorAll('.line')];
+			const more = stage.querySelector('.more');
+			const plain = lines.map((line) => {
+				const text = line.querySelector('.text');
+				if (text.dataset.html === undefined) text.dataset.html = text.innerHTML;
+				const value = text.textContent;
+				text.textContent = '';
+				line.setAttribute('data-pending', '');
+				return value;
+			});
+			more.setAttribute('data-pending', '');
 			let index = 0;
-			let untyped = [];
-			const next = () => {
+			const nextLine = () => {
+				if (!alive()) return;
 				if (index >= lines.length) {
-					node.setAttribute('data-typed', '');
+					more.removeAttribute('data-pending');
 					return;
 				}
 				const line = lines[index];
+				const text = line.querySelector('.text');
+				const value = plain[index];
 				line.removeAttribute('data-pending');
-				const walker = document.createTreeWalker(line.querySelector('.text'), NodeFilter.SHOW_TEXT);
-				const texts = [];
-				while (walker.nextNode()) texts.push(walker.currentNode);
-				untyped = texts.map((text) => {
-					const span = document.createElement('span');
-					span.className = 'untyped';
-					span.textContent = text.data;
-					text.data = '';
-					text.after(span);
-					return { text, span };
-				});
+				let count = 0;
+				const step = () => {
+					if (!alive()) return;
+					count += 1;
+					text.textContent = value.slice(0, count);
+					if (count < value.length) {
+						later(step, typeChar);
+						return;
+					}
+					text.innerHTML = text.dataset.html;
+					index += 1;
+					later(nextLine, typeGap);
+				};
 				step();
 			};
-			const step = () => {
-				const current = untyped.find((u) => u.span.textContent.length > 0);
-				if (!current) {
-					untyped.forEach((u) => u.span.remove());
-					index += 1;
-					next();
-					return;
-				}
-				const rest = current.span.textContent;
-				current.text.data += rest[0];
-				current.span.textContent = rest.slice(1);
-				timer = setTimeout(step, typeDelay);
-			};
-			next();
-		};
-		const setOpen = (node, open) => {
-			node.toggleAttribute('data-open', open);
-			node.querySelector('.toggle').setAttribute('aria-expanded', String(open));
-			if (!open) restore(node);
+			later(nextLine, typeStart);
 		};
 
-		nodes.forEach((node) => setOpen(node, false));
+		const open = (stage) => {
+			stage.open = true;
+			if (reduce.matches) {
+				restore(stage);
+				stage.setAttribute('data-expanded', '');
+				return;
+			}
+			type(stage);
+			// Two frames so the collapsed state is painted before it expands.
+			requestAnimationFrame(() => requestAnimationFrame(() => stage.setAttribute('data-expanded', '')));
+		};
+
+		const close = (stage) => {
+			stage.removeAttribute('data-expanded');
+			const done = () => {
+				if (stage.hasAttribute('data-expanded')) return;
+				stage.open = false;
+				restore(stage);
+			};
+			if (reduce.matches) done();
+			else later(done, expand);
+		};
+
 		root.setAttribute('data-enhanced', '');
-		nodes.forEach((node) => {
-			node.querySelector('.toggle').addEventListener('click', () => {
-				const open = !node.hasAttribute('data-open');
-				nodes.forEach((other) => setOpen(other, false));
-				if (open) {
-					setOpen(node, true);
-					type(node);
+		stages.forEach((stage) => {
+			stage.querySelector('summary').addEventListener('click', (event) => {
+				event.preventDefault();
+				if (stage.hasAttribute('data-expanded')) {
+					close(stage);
+					return;
 				}
+				stages.forEach((other) => {
+					if (other !== stage && other.hasAttribute('data-expanded')) close(other);
+				});
+				open(stage);
 			});
-			node.querySelector('.panel').addEventListener('focusin', () => {
-				if (node.hasAttribute('data-open') && !node.hasAttribute('data-typed')) finish(node);
-			});
+			// Focus inside a stage that is still typing completes it.
+			stage.querySelector('.panel-body').addEventListener('focusin', () => restore(stage));
 		});
 	})();
 </script>
@@ -245,6 +272,12 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		border-radius: var(--radius-md);
 		background: var(--sl-color-gray-6);
 	}
+	.node:hover {
+		border-color: var(--color-accent-border);
+	}
+	.node[open] {
+		border-color: var(--sl-color-text-accent);
+	}
 	code {
 		font-family: var(--font-mono);
 		font-size: var(--sl-text-sm);
@@ -252,30 +285,26 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		color: var(--sl-color-white);
 		overflow-wrap: anywhere;
 	}
-	.line code {
-		font-weight: 400;
-	}
 	.note {
 		font-family: var(--font-body);
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-gray-3);
 	}
 	.toggle {
-		appearance: none;
-		background: none;
-		border: 0;
-		padding: var(--space-2) 0;
-		margin: 0;
-		font: inherit;
-		color: inherit;
-		text-align: start;
+		list-style: none;
 		cursor: pointer;
-		inline-size: 100%;
+		padding-block: var(--space-2);
 		min-block-size: var(--size-touch);
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto auto;
 		align-items: start;
 		column-gap: var(--space-2);
+	}
+	.toggle::-webkit-details-marker {
+		display: none;
+	}
+	.node[open] .name {
+		color: var(--sl-color-text-accent);
 	}
 	.head {
 		display: flex;
@@ -298,11 +327,11 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		font-weight: 400;
 		color: var(--sl-color-gray-3);
 		border: var(--border);
-		border-radius: var(--radius-sm);
-		padding: 0 var(--space-1);
+		border-radius: var(--radius-full);
+		padding: 0 var(--space-2);
 		white-space: nowrap;
 	}
-	.toggle .chip {
+	.toggle > .chip {
 		margin-block-start: var(--space-1);
 	}
 	.chevron {
@@ -310,19 +339,30 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		color: var(--sl-color-gray-3);
 		margin-block-start: var(--space-1);
 	}
+	.node[open] .chevron {
+		color: var(--sl-color-text-accent);
+		rotate: var(--rotate-open);
+	}
 	.steps {
+		grid-column: 1 / -1;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: var(--space-1);
-		padding-block-end: var(--space-2);
+		padding-block-start: var(--space-2);
 	}
 	.sep {
 		font-family: var(--font-mono);
-		color: var(--sl-color-gray-3);
+		color: var(--sl-color-text-accent);
 	}
 	.panel {
 		display: grid;
+		grid-template-rows: 1fr;
+	}
+	.loop-flow[data-enhanced] .panel {
+		grid-template-rows: 0fr;
+	}
+	.loop-flow[data-enhanced] .node[data-expanded] .panel {
 		grid-template-rows: 1fr;
 	}
 	.panel-clip {
@@ -339,14 +379,23 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		margin: 0;
 		display: grid;
 		grid-template-columns: 2ch minmax(0, 1fr);
-		font-size: var(--sl-text-sm);
-		color: var(--sl-color-gray-2);
+		min-block-size: calc(var(--sl-text-xs) * var(--sl-line-height));
+		font-family: var(--font-mono);
+		font-size: var(--sl-text-xs);
+		line-height: var(--sl-line-height);
+		color: var(--sl-color-gray-3);
 		overflow-wrap: anywhere;
 	}
+	.line code {
+		font-size: var(--sl-text-xs);
+		font-weight: 400;
+	}
 	.prompt {
-		font-family: var(--font-mono);
 		color: var(--sl-color-gray-3);
 		white-space: pre;
+	}
+	.line[data-pending] .prompt {
+		visibility: hidden;
 	}
 	.more {
 		align-self: flex-end;
@@ -354,49 +403,34 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		align-items: center;
 		gap: var(--space-1);
 		min-block-size: var(--size-touch);
-		font-size: var(--sl-text-sm);
+		font-family: var(--font-mono);
+		font-size: var(--sl-text-xs);
 		color: var(--sl-color-text-accent);
 		text-decoration: none;
+	}
+	.more[data-pending] {
+		visibility: hidden;
+		opacity: 0;
 	}
 	.more-arrow {
 		display: inline-flex;
 	}
-	.untyped {
-		color: transparent;
-	}
-	.loop-flow[data-enhanced] .node[data-open] {
-		border-color: var(--sl-color-text-accent);
-	}
-	.loop-flow[data-enhanced] .node[data-open] .name {
-		color: var(--sl-color-text-accent);
-	}
-	.loop-flow[data-enhanced] .node[data-open] .chevron {
-		rotate: var(--rotate-open);
-	}
-	.loop-flow[data-enhanced] .node:not([data-open]) .panel {
-		grid-template-rows: 0fr;
-		visibility: hidden;
-	}
-	.loop-flow[data-enhanced] .line[data-pending] {
-		opacity: 0;
-	}
-	.loop-flow[data-enhanced] .node:not([data-typed]) .more:not(:focus-visible) {
-		opacity: 0;
-	}
-	.loop-flow:not([data-enhanced]) .chevron {
-		display: none;
-	}
 	@media (prefers-reduced-motion: no-preference) {
+		.node {
+			transition: border-color var(--duration-hover) ease;
+		}
 		.loop-flow[data-enhanced] .panel {
+			transition: grid-template-rows var(--duration-expand) ease;
+		}
+		.chevron {
 			transition:
-				grid-template-rows var(--duration-enter) ease-out,
-				visibility var(--duration-enter);
+				rotate var(--duration-expand) ease,
+				color var(--duration-hover) ease;
 		}
-		.loop-flow[data-enhanced] .chevron {
-			transition: rotate var(--duration-enter) ease-out;
-		}
-		.loop-flow[data-enhanced] .more {
-			transition: opacity var(--duration-fade) ease;
+		.more {
+			transition:
+				opacity var(--duration-expand) ease,
+				visibility var(--duration-expand);
 		}
 		.more-arrow {
 			transition: translate var(--duration-hover) ease-out;
