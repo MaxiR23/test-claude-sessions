@@ -1,0 +1,29 @@
+---
+title: Introduction
+sidebar:
+  order: 1
+description: The agent loop that takes an issue from idea to pull request.
+---
+
+import LoopFlow from '../../../../components/LoopFlow.astro';
+
+The loop runs in a cloud session and takes an issue to a pull request ready for review. The session acts as the orchestrator: it dispatches each stage by name with a one-line instruction and implements nothing.
+
+<LoopFlow />
+
+If something fails, [Recovery](/en/workflow/recuperacion/) says what to do in each case.
+
+:::tip
+Review the PR before merging. The loop leaves it ready; the merge is always decided by a person.
+:::
+
+## Why the rules are enforced with code
+
+`CLAUDE.md` sets the rules for branches, commits and pull requests, and every cloud session loads it. But instructions are advice: a session can misread them, forget them after a long conversation, or follow an environment instruction that contradicts them, such as the branch name it is told to push to. A script cannot be talked into skipping a check. `scripts/ship.sh` and `scripts/issue.sh` turn each rule into a test that either passes or stops the run with a message. This way, a session that follows `CLAUDE.md` and one that does not end up with the same branch, the same commit message and the same PR shape.
+
+## Sources
+
+- [Use Claude Code in the cloud](https://code.claude.com/docs/en/claude-code-on-the-web)
+- [Subagents](https://code.claude.com/docs/en/sub-agents)
+- [Skills](https://code.claude.com/docs/en/skills)
+- [Memory](https://code.claude.com/docs/en/memory)

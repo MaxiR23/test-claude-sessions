@@ -1,0 +1,38 @@
+---
+title: Remove the attribution footer
+sidebar:
+  order: 6
+description: How to remove the footer the proxy adds to PR and issue bodies.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The GitHub proxy of the cloud session adds an attribution footer to PR and issue bodies, and adds it again when the body is edited with `gh` or `gh api`. That footer is not in the official documentation. After every `publish` and every issue `create`:
+
+<Steps>
+
+1. Read the body with the built-in GitHub tools.
+2. If it ends with the footer, remove the footer and its `---` separator, using only the built-in tools.
+3. Read it again with the built-in tools and confirm it is gone. For a PR, report the last 3 lines of the body.
+4. Do not change anything else in the body.
+
+</Steps>
+
+:::caution
+Never edit the body with `gh` or `gh api` for this: the footer comes back.
+:::
+
+:::note[Observation]
+Saving the body without the footer through `gh api` made the footer come back.
+:::
+
+:::note[Observation]
+Saving the body without the footer with the session's built-in GitHub tools removed it, and it stayed removed when the PR was read again.
+:::
+
+The `attribution.pr` setting documents a different line. See [Attribution](/en/configuracion/atribucion/).
+
+## Sources
+
+- [Settings reference](https://code.claude.com/docs/en/settings-reference)
+- [Configure cloud environments](https://code.claude.com/docs/en/cloud-environments)

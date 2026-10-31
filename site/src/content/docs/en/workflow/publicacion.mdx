@@ -1,0 +1,53 @@
+---
+title: Branch, commit and publishing
+sidebar:
+  order: 5
+description: How the ship skill creates the branch, commits and publishes the PR.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## The branch
+
+It is not created by hand. `scripts/ship.sh prepare` creates it from an up-to-date `main`, named `type/short-description`: lowercase, hyphenated, built from the first words of the issue title. Nothing is ever committed directly to `main`.
+
+## What the script enforces
+
+`scripts/ship.sh` enforces, among other things:
+
+- Exactly one type label on the issue, and a title of the form `type: description` whose type matches the label.
+- A `type/short-description` branch created from an up-to-date `main`, with the type taken from the label.
+- The commit message taken from the issue title, so it follows Conventional Commits by construction.
+- A refusal to commit with an Anthropic noreply identity, and to accept `Co-Authored-By` and `Claude-Session` trailers.
+- A refusal to stage environment files, local settings and working files under `.claude/loop/`.
+- A PR body whose first line is `Closes #<issue>` and that contains no attribution.
+
+## The flow
+
+<Steps>
+
+1. The `ship` skill runs `scripts/ship.sh prepare <N> <paths>`. It reads the issue, checks label and title, fetches `origin`, creates the branch if it is on `main`, validates each path, commits with the issue title as the message and writes `.claude/loop/pr-<N>.meta` with title, label, base, branch, commit and mode (`create` or `update #<pr>`).
+2. It writes `.claude/loop/pr-<N>.body.md`. Nothing has been pushed up to this point.
+3. It runs `scripts/ship.sh publish <N>` right away. It validates the body, requires the same branch and the same commit with no uncommitted changes in tracked files, pushes, and creates or updates the PR with base, title, label, assignee and body.
+
+</Steps>
+
+There is no waiting step between `prepare` and `publish`.
+
+```text frame="terminal" title="publish issue N"
+scripts/ship.sh prepare [N] [paths]
+scripts/ship.sh publish [N]
+```
+
+## Why they are separate
+
+`prepare` is cheap to redo and touches nothing outside the clone. `publish` is the only step that writes to GitHub, and it refuses to run if anything changed since `prepare`. `.claude/loop/` is in `.gitignore`, so the meta and body files never enter a commit.
+
+## Commits
+
+They follow Conventional Commits, in English, in the imperative mood and with no body: the reasoning goes in the PR. The branch's commits never reach `main`; only the squash does.
+
+## Sources
+
+- [Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue)
+- [REST API: pull requests](https://docs.github.com/en/rest/pulls/pulls)

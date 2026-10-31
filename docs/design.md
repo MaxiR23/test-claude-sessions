@@ -258,7 +258,7 @@ terminal block.
 - No interface string is a literal in `site/src/components/` or
   `astro.config.mjs`. Code (stage names, commands) stays the same in both
   languages.
-- Untranslated English pages show Starlight's fallback to the Spanish page.
+- English pages live under `site/src/content/docs/en/`, at the same relative path and extension as their Spanish page. A Spanish page without an English copy shows Starlight's fallback on `/en/`.
 
 ### Overrides
 
