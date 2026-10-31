@@ -42,8 +42,9 @@ and do not implement.
     implement-issue, fix mode     (agent, only if verify confirmed fixes)
     ship                          (skill: prepare, publish, footer removal; ends here)
 
-There is no owner approval at any stage; the person reviews the PR after the loop. The only stop is a BLOCKING open
-question in the issue: write it in the issue and stop the loop on it.
+There is no owner approval at any stage; the person reviews the PR after
+the loop. The only stop is a BLOCKING open question in the issue: write it
+in the issue and stop the loop on it.
 
 ## Gate
 

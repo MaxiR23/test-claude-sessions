@@ -61,7 +61,8 @@ ends at a pull request ready to review. A person reviews and merges it.
   BLOCKING or IMPORTANT findings.
 - `implement-issue` in fix mode fixes what `verify-findings` confirmed, in
   one cycle. There is no second review: open minors are listed in the PR
-  body as a record. The loop does not review them again; the person reviewing the PR sees them.
+  body as a record. The loop does not review them again; the person
+  reviewing the PR sees them.
 
 ## 6. Commit and publish
 
