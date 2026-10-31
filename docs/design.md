@@ -156,7 +156,8 @@ preceded by a `›` marker. The page list is generated at build time from
 the docs collection: every non-draft page under the folder except
 `introduccion`, ordered by `sidebar.order` like the sidebar, with the page
 `title` as text; adding, renaming or reordering a page updates it with no
-edit to the home. Each link is at least `--size-touch` tall. On hover and
+edit to the home. The pages are those of the current page's locale, linked
+to their own paths. Each link is at least `--size-touch` tall. On hover and
 focus a link turns to the accent color and its marker moves `--space-1` to
 the right over `--duration-hover`; under reduced motion only the color
 changes. Use it for the home's chapter entry points; do not use it for
@@ -259,6 +260,9 @@ terminal block.
   `astro.config.mjs`. Code (stage names, commands) stays the same in both
   languages.
 - English pages live under `site/src/content/docs/en/`, at the same relative path and extension as their Spanish page. A Spanish page without an English copy shows Starlight's fallback on `/en/`.
+- With nothing stored, the browser language decides on every page load: a
+  Spanish-preferring browser that opens a shared `/en/` link is sent to the
+  Spanish page until a language is chosen in the select.
 
 ### Overrides
 

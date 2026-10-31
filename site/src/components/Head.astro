@@ -14,7 +14,9 @@ const storageKey = 'site-locale';
 			sites.find(({ base }) => base === '');
 
 		// A choice made in the language select is stored. Starlight's own listener
-		// on the select still navigates, after this one.
+		// on the select runs before this one (it sits on the select, ours on
+		// document). The choice is still stored because changing the path only
+		// schedules the navigation; this listener runs before the page unloads.
 		document.addEventListener('change', (e) => {
 			const select = e.target;
 			if (!(select instanceof HTMLSelectElement) || !select.closest('starlight-lang-select')) return;
