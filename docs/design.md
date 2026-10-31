@@ -14,7 +14,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-border` | `#26282D` | Hairlines, card borders, loop terminal `↳` of stages not yet done |
 | `--color-text` | `#ECEAE4` | Body and headings |
 | `--color-text-muted` | `#A3A39C` | Secondary text |
-| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, loop terminal cursor, markers and done stages, focus ring |
+| `--color-accent` | `#F0B44C` | Links, primary action, site title cursor, guide index numbers, eyebrow, hero status line, loop terminal cursor, markers and done stages, loop flow connector dots, branch arrows, open stage border and name, chevron, `›` separator and links, focus ring |
 | `--color-tip` | `var(--color-accent)` | Tip aside tone (warm) |
 | `--color-tip-bg` | `color-mix(in srgb, var(--color-accent) 12%, var(--color-surface))` | Tip aside background |
 | `--color-danger` | `#F2706A` | Caution aside tone (red) |
@@ -95,7 +95,7 @@ created.
 | `--duration-type-start` | 0.15s | Pause before a loop flow stage starts typing its first line |
 | `--duration-type-gap` | 0.09s | Pause between two typed loop flow detail lines |
 | `--duration-expand` | 0.3s | Expand and collapse of a loop flow stage, its chevron turn and its link fade-in |
-| `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links |
+| `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links, loop flow stage border color and link arrow movement |
 | `--duration-run-start` | 0.5s | Pause before the loop terminal starts typing |
 | `--duration-run-appear` | 0.22s | Delay between consecutive loop terminal stages appearing |
 | `--duration-run-frame` | 0.08s | One frame of the loop terminal spinner |
@@ -205,13 +205,15 @@ formatted markup back as soon as it is typed. Then the link to the
 stage's page fades in over `--duration-expand`, in `--font-mono` at
 `--sl-text-xs` in the accent color, aligned right; its arrow moves
 `--space-1` right on hover and focus over `--duration-hover`. Closing a
-stage stops its typing and restores its text. While a stage types, its link is invisible but stays in the tab order,
-so Tab from the open stage's summary reaches it; focusing inside a stage
-that is still typing completes it at once, with every line and the link
-shown. A stage opened natively, as find in page does, shows expanded at
-once with its full text and no typing, and closes the other open stage. The script only toggles attributes
-and text on elements the component renders, so the scoped styles apply
-to every state.
+stage stops its typing and restores its text. While a stage types, its
+link is invisible but stays in the tab order, so Tab from the open
+stage's summary reaches it and a screen reader can reach and announce
+it; focusing inside a stage that is still typing completes it at once,
+with every line and the link shown. A stage opened natively, as find in
+page does, shows expanded at once with its full text and no typing, and
+closes the other open stage. The script only toggles attributes and text
+on elements the component renders, so the scoped styles apply to every
+state.
 
 Under reduced motion there is no dot animation, no typing and no
 transitions: a stage opens and closes at once, with its full text.
@@ -227,11 +229,11 @@ commands: use the terminal block.
 `site/src/components/LoopTerminal.astro`, imported in `index.mdx` and
 placed as `<LoopTerminal />`. A terminal frame like the terminal block
 (surface body, border, title bar with three muted `--size-dot` dots and
-the centered title `sesión en la nube` / `cloud session`) that shows one loop run for
-issue #24. The run has three phases. Typing: after `--duration-run-start`
-the command is typed at `--duration-type` per character, with the `_`
-cursor blinking over `--duration-blink`. Stages: they appear
-`--duration-run-appear` apart, fading in and rising `--space-2` over
+the centered title `sesión en la nube` / `cloud session`) that shows one
+loop run for issue #24. The run has three phases. Typing: after
+`--duration-run-start` the command is typed at `--duration-type` per
+character, with the `_` cursor blinking over `--duration-blink`. Stages: they
+appear `--duration-run-appear` apart, fading in and rising `--space-2` over
 `--duration-enter`, muted with a `·`. Running: each stage shows a braille
 spinner at `--duration-run-frame` per frame for a random time between
 `--duration-run-stage-min` and `--duration-run-stage-max`, then a `✓`,
@@ -243,16 +245,15 @@ the name, then the description aligned with the name and preceded by an
 `aria-hidden` `↳` in the border color, which turns muted once the stage
 is done. The name is not padded. Below md the text is `--sl-text-code-sm`
 and the body padding `--space-2` `--space-3`. At md and up they are
-`--sl-text-code` and `--space-3` `--space-4`. It runs only
-while visible on screen and the tab is visible. Accessibility: the text
-is static in the DOM, the prompt, cursor, markers, `↳` and name padding
-are `aria-hidden`, and nothing is announced per cycle. Under reduced motion or without
-JavaScript it shows the final state at once and nothing moves. It
-follows the setting while the page is open: turning reduced motion on
-stops the run at once in the final state, and turning it off starts the
-run again from the beginning. Use it
-only for the home's run; for other commands and transcripts use the
-terminal block.
+`--sl-text-code` and `--space-3` `--space-4`. It runs only while visible
+on screen and the tab is visible. Accessibility: the text is static in
+the DOM, the prompt, cursor, markers, `↳` and name padding are
+`aria-hidden`, and nothing is announced per cycle. Under reduced motion
+or without JavaScript it shows the final state at once and nothing
+moves. It follows the setting while the page is open: turning reduced
+motion on stops the run at once in the final state, and turning it off
+starts the run again from the beginning. Use it only for the home's run;
+for other commands and transcripts use the terminal block.
 
 ### Locales and translations
 
@@ -265,7 +266,9 @@ terminal block.
 - No interface string is a literal in `site/src/components/` or
   `astro.config.mjs`. Code (stage names, commands) stays the same in both
   languages.
-- English pages live under `site/src/content/docs/en/`, at the same relative path and extension as their Spanish page. A Spanish page without an English copy shows Starlight's fallback on `/en/`.
+- English pages live under `site/src/content/docs/en/`, at the same
+  relative path and extension as their Spanish page. A Spanish page
+  without an English copy shows Starlight's fallback on `/en/`.
 - With nothing stored, the browser language decides on every page load: a
   Spanish-preferring browser that opens a shared `/en/` link is sent to the
   Spanish page until a language is chosen in the select.
@@ -329,7 +332,13 @@ terminal block.
   type tag and the chevron always stay at the top right.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
-- Theme select and language select (Starlight's, header): at md and up their width is set by overriding `--sl-select-width` on the select to `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish label ("Automático") shows in full with its icon and caret. Below md the theme select keeps Starlight's width and the language select uses `--size-select` to equal it; both sit where Starlight places them (the mobile menu).
+- Theme select and language select (Starlight's, header): at md and up
+  their width is set by overriding `--sl-select-width` on the select to
+  `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish
+  label ("Automático") shows in full with its icon and caret. Below md
+  the theme select keeps Starlight's width and the language select uses
+  `--size-select` to equal it; both sit where Starlight places them (the
+  mobile menu).
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
@@ -350,11 +359,15 @@ terminal block.
   | danger on danger bg | 5.22 |
   | text on danger bg | 12.48 |
 
-- Touch targets at least `--size-touch` (44 px): hero actions, guide index links and the
+- Touch targets at least `--size-touch` (44 px): hero actions, guide
+  index links, loop flow stage summaries and their links, and the
   back-to-top button.
 - Visible focus: every focusable element shows a `--focus-ring-width` solid
   `--color-accent` outline on `:focus-visible`.
 - Icon-only controls carry an accessible label (back-to-top:
   `footer.backToTop`, "Volver arriba" / "Back to top").
-- Decorative text (the site title's `~/` form) is `aria-hidden`, with the
-  real title exposed to assistive tech.
+- Decorative text (the site title's `~/` form and the loop terminal `↳`)
+  is `aria-hidden`, with the real title exposed to assistive tech. The
+  `↳` is in the border color (about 1.2:1 on the surface), below the
+  4.5:1 text minimum; it is exempt because it is decorative and
+  `aria-hidden`.
