@@ -15,11 +15,12 @@ const { chapters } = Astro.props;
 const base = localeBase(Astro.locals.starlightRoute.locale);
 const docs = await getCollection('docs', ({ data }) => !data.draft);
 const orderOf = (entry: (typeof docs)[number]) => entry.data.sidebar.order ?? Number.MAX_VALUE;
+const pathOf = (entry: (typeof docs)[number]) => `/${entry.id}/`;
 const sections = chapters.map((chapter, index) => ({
 	...chapter,
 	number: String(index + 1).padStart(2, '0'),
 	pages: docs
-		.filter((entry) => entry.id.startsWith(`${chapter.dir}/`) && entry.id !== `${chapter.dir}/introduccion`)
+		.filter((entry) => pathOf(entry).startsWith(`${base}/${chapter.dir}/`) && pathOf(entry) !== `${base}/${chapter.dir}/introduccion/`)
 		.sort((a, b) => orderOf(a) - orderOf(b) || a.id.localeCompare(b.id, Astro.locals.starlightRoute.lang)),
 }));
 ---
@@ -31,7 +32,7 @@ const sections = chapters.map((chapter, index) => ({
 			<p class="description">{description}</p>
 			<ul>
 				{pages.map((page) => (
-					<li><a href={`${base}/${page.id}/`}><span class="marker" aria-hidden="true">›</span>{page.data.title}</a></li>
+					<li><a href={pathOf(page)}><span class="marker" aria-hidden="true">›</span>{page.data.title}</a></li>
 				))}
 			</ul>
 		</section>
