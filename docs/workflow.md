@@ -1,8 +1,8 @@
 # Development workflow
 
 Flow for every feature, fix or non-trivial change in this repo. The loop
-runs in a cloud session from end to end without owner approvals, merge
-included.
+runs in a cloud session from end to end without owner approvals and
+ends at a pull request ready to review. A person reviews and merges it.
 
 ## 1. Open an issue
 
@@ -61,7 +61,7 @@ included.
   BLOCKING or IMPORTANT findings.
 - `implement-issue` in fix mode fixes what `verify-findings` confirmed, in
   one cycle. There is no second review: open minors are listed in the PR
-  body as a record. Nobody reviews them before the merge.
+  body as a record. The loop does not review them again; the person reviewing the PR sees them.
 
 ## 6. Commit and publish
 
@@ -88,16 +88,19 @@ issue bodies, and re-adds it when the body is edited through `gh` or
    For a PR, report the last 3 lines of the body.
 4. Change nothing else in the body.
 
-## 8. Merge
+## 8. Merge (the person's step)
 
-- After `publish` and the footer removal step, the `ship` skill merges with
-  `scripts/merge.sh <pr>` only. Never merge any other way.
+- The loop ends after `publish` and the footer removal step, with the PR URL
+  and the last 3 lines of its body reported. The session never merges a pull
+  request in any way.
+- A person reviews the PR and merges it. `scripts/merge.sh <pr>` is a tool
+  that person may run.
 - The script requires the PR open, based on `main`, mergeable and with no
   failing checks, and waits until the required status `Vercel`
   (`REQUIRED_STATUS` in the script) is reported and succeeded. It
   squash-merges through the REST API with `<PR title> (#<N>)` as the title
-  (squash is the only method enabled in the repository settings), and prints `verified` and `reason` of the
-  merge commit, which the session reports.
+  (squash is the only method enabled in the repository settings), and prints
+  `verified` and `reason` of the merge commit.
 - The squash commit is signed by GitHub and lands on `main` as one commit
   with the PR title and the number.
 - The session never offers to watch the PR.
@@ -115,8 +118,6 @@ issue bodies, and re-adds it when the body is edited through `gh` or
   script's message and `prepare` again. A failure after the push and
   before the PR exists ("branch is pushed but has no open PR") is retried
   with `publish`, never `prepare`.
-- A `scripts/merge.sh` failure: report its message and stop; never merge
-  another way.
 - An open decision raised by `implement-issue`: if it is a product or
   design decision, write it in the issue as a BLOCKING question and stop
   the loop on that issue.
