@@ -1,6 +1,6 @@
 ---
 const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
-const handle = `~/${siteTitle.toLocaleLowerCase('es').replaceAll(' ', '-')}`;
+const handle = `~/${siteTitle.toLocaleLowerCase(Astro.locals.starlightRoute.lang).replaceAll(' ', '-')}`;
 ---
 
 <a href={siteTitleHref} class="site-title sl-flex">

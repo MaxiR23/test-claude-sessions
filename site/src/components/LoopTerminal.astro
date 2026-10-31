@@ -1,18 +1,19 @@
 ---
+const t = Astro.locals.t;
 const command = 'claude --cloud "Resolve issue #24"';
 const stages = [
-	{ name: 'plan-issue', description: 'arma el plan' },
-	{ name: 'implement-issue', description: 'escribe el código y corre el build' },
-	{ name: 'loop-path.sh', description: 'hay código: va a revisión' },
-	{ name: 'review-changes', description: 'revisa el diff' },
-	{ name: 'verify-findings', description: 'confirma los hallazgos' },
-	{ name: 'ship', description: 'commit y PR' },
+	{ name: 'plan-issue', description: t('loopTerminal.planIssue') },
+	{ name: 'implement-issue', description: t('loopTerminal.implementIssue') },
+	{ name: 'loop-path.sh', description: t('loopTerminal.loopPath') },
+	{ name: 'review-changes', description: t('loopTerminal.reviewChanges') },
+	{ name: 'verify-findings', description: t('loopTerminal.verifyFindings') },
+	{ name: 'ship', description: t('loopTerminal.ship') },
 ];
 const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 ---
 
 <div class="loop-terminal not-content">
-	<div class="header"><span class="dots" aria-hidden="true"><span></span><span></span><span></span></span><span class="title" id="loop-terminal-title">sesión en la nube</span></div>
+	<div class="header"><span class="dots" aria-hidden="true"><span></span><span></span><span></span></span><span class="title" id="loop-terminal-title">{t('loopTerminal.title')}</span></div>
 	<div class="body" role="region" aria-labelledby="loop-terminal-title" tabindex="0">
 		<p class="line command-line"><span class="prompt" aria-hidden="true">$ </span><span class="command">{command}</span><span class="cursor" aria-hidden="true">_</span></p>
 		<ol class="stages">
@@ -20,7 +21,7 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 				<li class="line stage"><span class="marker" aria-hidden="true">✓</span><span class="name">{name}</span><span class="pad" aria-hidden="true">{' '.repeat(column - name.length - 1)}</span>{' '}<span class="arrow" aria-hidden="true">↳</span><span class="description">{description}</span></li>
 			))}
 		</ol>
-		<p class="line final"><span class="marker" aria-hidden="true">✓</span>PR #24 listo para revisar</p>
+		<p class="line final"><span class="marker" aria-hidden="true">✓</span>{t('loopTerminal.final')}</p>
 	</div>
 </div>
 

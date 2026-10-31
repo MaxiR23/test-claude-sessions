@@ -34,6 +34,7 @@
 	--size-touch: 2.75rem;
 	--focus-ring-width: 2px;
 	--size-dot: 0.3125rem;
+	--size-select: 6.25em;
 
 	--duration-flow: 1.2s;
 	--duration-fade: 0.2s;
@@ -102,8 +103,12 @@ h1#_top {
 	outline-offset: var(--space-1);
 }
 
+starlight-lang-select select {
+	--sl-select-width: var(--size-select);
+}
+
 @media (min-width: 50rem) {
-	starlight-theme-select select {
+	:is(starlight-theme-select, starlight-lang-select) select {
 		--sl-select-width: calc(9ch + var(--space-7));
 	}
 }

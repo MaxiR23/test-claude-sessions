@@ -1,0 +1,43 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+import { locales, localeBase } from '../locales.mjs';
+
+const sites = Object.entries(locales).map(([key, { lang }]) => ({ base: localeBase(key), lang }));
+const storageKey = 'site-locale';
+---
+
+<Default />
+<script is:inline define:vars={{ sites, storageKey }}>
+	(() => {
+		const localeOf = (pathname) =>
+			sites.find(({ base }) => base !== '' && (pathname === base || pathname.startsWith(`${base}/`))) ||
+			sites.find(({ base }) => base === '');
+
+		// A choice made in the language select is stored. Starlight's own listener
+		// on the select still navigates, after this one.
+		document.addEventListener('change', (e) => {
+			const select = e.target;
+			if (!(select instanceof HTMLSelectElement) || !select.closest('starlight-lang-select')) return;
+			try {
+				localStorage.setItem(storageKey, localeOf(new URL(select.value, location.href).pathname).lang);
+			} catch {}
+		});
+
+		// A stored choice wins. The browser's first preferred language is used only
+		// when nothing is stored; anything unknown falls back to the root locale.
+		let stored = null;
+		try {
+			stored = localStorage.getItem(storageKey);
+		} catch {}
+		const first = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+		const primary = first.toLowerCase().split('-')[0];
+		const wanted =
+			sites.find(({ lang }) => lang === stored) ||
+			sites.find(({ lang }) => lang.toLowerCase().split('-')[0] === primary) ||
+			sites.find(({ base }) => base === '');
+		const current = localeOf(location.pathname);
+		if (wanted !== current) {
+			location.replace(wanted.base + (location.pathname.slice(current.base.length) || '/') + location.search + location.hash);
+		}
+	})();
+</script>
