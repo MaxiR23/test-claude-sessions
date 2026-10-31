@@ -1,0 +1,76 @@
+---
+title: Environment variables
+sidebar:
+  order: 2
+description: How to set the git identity of cloud sessions with environment variables.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+A cloud environment is the saved configuration a session runs in. It controls network access, environment variables and setup scripts. The variables use `.env` format, one `KEY=value` pair per line, and the session reads them as ordinary environment variables that any command can read.
+
+:::caution
+Anyone who uses the environment can read the values. Do not put anything there that other users of the environment should not see.
+:::
+
+## When they apply
+
+The session reads the values when it is created, and again every time Claude Code starts in its VM: when restoring an idle VM or rebuilding a reclaimed VM. If you edit, add or remove a variable, an existing session keeps the previous values until its VM is restored or rebuilt.
+
+:::tip
+Save the variables and open a new session.
+:::
+
+## Git identity
+
+This repo depends on one group of variables: the git identity.
+
+| Variable | What it is for |
+| :- | :- |
+| `GIT_AUTHOR_NAME` | Name recorded as the commit author |
+| `GIT_AUTHOR_EMAIL` | Email recorded as the commit author |
+| `GIT_COMMITTER_NAME` | Name recorded as the committer |
+| `GIT_COMMITTER_EMAIL` | Email recorded as the committer |
+
+Git reads these variables before any `user.name` or `user.email`. A cloud session starts from a clean clone, with no personal git configuration, so without them the commits are not made in your name.
+
+:::note[Observation]
+Before the variables were set, the session's commits carried Anthropic's noreply identity. I saw this in this repo, and no official page describes it.
+:::
+
+Set all four with your name and your email. For the email, use the noreply address that GitHub offers for your account: it links commits to your account without exposing a personal address.
+
+<Steps>
+
+1. Open the cloud environment and find the environment variables box.
+2. Add the four lines, with your details in place of the placeholders.
+3. Save the environment.
+4. Start a new session so it reads the values.
+
+</Steps>
+
+```ini title=".env"
+GIT_AUTHOR_NAME=[TU NOMBRE]
+GIT_AUTHOR_EMAIL=[ID]+[USUARIO]@users.noreply.github.com
+GIT_COMMITTER_NAME=[TU NOMBRE]
+GIT_COMMITTER_EMAIL=[ID]+[USUARIO]@users.noreply.github.com
+```
+
+Commit signing is turned off in the environment through `GIT_CONFIG_*` variables, and `scripts/ship.sh` refuses to commit with Anthropic's noreply identity. More detail in [Branch, commit and publishing](/en/workflow/publicacion/).
+
+## `GH_TOKEN` is not recommended
+
+An earlier version of this guide recommended setting a personal `GH_TOKEN` in the environment so that GitHub actions were attributed to its owner. That recommendation was withdrawn. GitHub access is built with the account connection: see [Connecting to GitHub](/en/configuracion/conexion-github/).
+
+:::note[Observation]
+With a personal `GH_TOKEN` in the environment, label events still showed "with Claude" and the attribution footer kept being added to PR bodies. Setting it did not change the attribution.
+:::
+
+:::caution
+If you ever set a token as an environment variable, it is visible to anyone who uses the environment. Never commit it, paste it into an issue, a PR or a document, or print it from a session.
+:::
+
+## Sources
+
+- [Configure cloud environments](https://code.claude.com/docs/en/cloud-environments)
+- [Setting your commit email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)

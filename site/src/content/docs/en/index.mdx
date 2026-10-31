@@ -1,0 +1,30 @@
+---
+title: Bitácora agéntica
+description: How I set up Claude Code cloud sessions to resolve issues end to end.
+template: splash
+eyebrow: STUDY WIKI · CLAUDE CODE
+status: Under construction
+hero:
+  title: What I learn while the agents work.
+  tagline: Here I note how I built Claude Code cloud sessions, following the repo's rules.
+  actions:
+    - text: Start the guide
+      link: /en/configuracion/introduccion/
+      variant: primary
+    - text: See the workflow
+      link: /en/workflow/introduccion/
+      variant: secondary
+      icon: right-arrow
+---
+
+import GuideIndex from '../../../components/GuideIndex.astro';
+import LoopTerminal from '../../../components/LoopTerminal.astro';
+
+<GuideIndex
+  chapters={[
+    { dir: 'configuracion', title: 'Setup', description: 'How to prepare the cloud environment, the identity and the repo rules.' },
+    { dir: 'workflow', title: 'Workflow', description: 'The agent loop that takes an issue from idea to pull request.' },
+  ]}
+/>
+
+<LoopTerminal />
