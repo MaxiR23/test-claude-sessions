@@ -165,7 +165,7 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 	(() => {
 		const root = document.querySelector('.loop-terminal');
 		if (!root) return;
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 		const css = getComputedStyle(root);
 		const ms = (name) => {
 			const value = css.getPropertyValue(name).trim();
@@ -218,9 +218,8 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 				yield pause;
 			}
 		}
-		const it = run();
-		root.setAttribute('data-animated', '');
-		let nextDelay = it.next().value;
+		let it = null;
+		let nextDelay = 0;
 		let timer = null;
 		let visible = false;
 		const tick = () => {
@@ -228,17 +227,36 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 			timer = setTimeout(tick, nextDelay);
 		};
 		const sync = () => {
-			if (visible && !document.hidden) {
+			if (it && visible && !document.hidden) {
 				if (timer === null) timer = setTimeout(tick, nextDelay);
 			} else {
 				clearTimeout(timer);
 				timer = null;
 			}
 		};
+		const startRun = () => {
+			clearTimeout(timer);
+			timer = null;
+			it = run();
+			root.setAttribute('data-animated', '');
+			nextDelay = it.next().value;
+			sync();
+		};
+		// Back to the markup as rendered: every stage done, final line visible.
+		const stopRun = () => {
+			it = null;
+			sync();
+			root.removeAttribute('data-animated');
+			command.style.removeProperty('--typed');
+			for (const line of [...stages, final]) line.removeAttribute('data-state');
+			for (const stage of stages) setMarker(stage, '✓');
+		};
 		new IntersectionObserver((entries) => {
 			visible = entries[entries.length - 1].isIntersecting;
 			sync();
 		}).observe(root);
 		document.addEventListener('visibilitychange', sync);
+		reduce.addEventListener('change', () => (reduce.matches ? stopRun() : startRun()));
+		if (!reduce.matches) startRun();
 	})();
 </script>
