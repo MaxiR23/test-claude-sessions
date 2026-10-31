@@ -11,11 +11,10 @@ description: Qué hacer cuando una etapa del loop falla.
 | `scripts/ship.sh prepare` | Si es sobre el cambio, corregirlo con `implement-issue` en modo fix; si no, seguir el mensaje del script. Después, `prepare` de nuevo |
 | `scripts/ship.sh publish` antes del push | Seguir el mensaje del script y volver a `prepare` |
 | `scripts/ship.sh publish` después del push y antes de que exista el PR ("branch is pushed but has no open PR") | Reintentar con `publish` |
-| `scripts/merge.sh` | Reportar su mensaje y parar |
 | Una decisión abierta que levanta `implement-issue` | Si es de producto o de diseño, escribirla en el issue como pregunta BLOCKING y parar el loop en ese issue |
 
 :::caution
-Nunca mergees de otra forma si `scripts/merge.sh` falla. Y nunca corras `prepare` después del push: reintentá con `publish`.
+Nunca corras `prepare` después del push: reintentá con `publish`.
 :::
 
 ## Fuentes

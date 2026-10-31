@@ -21,7 +21,7 @@ implement-issue -> scripts/loop-path.sh -> ship
 2. `verify-findings` corre solo si la revisión reporta hallazgos BLOCKING o IMPORTANT.
 3. `implement-issue` en modo fix corrige lo que `verify-findings` confirmó, en un solo ciclo.
 
-No hay segunda revisión. Los menores que queden abiertos se listan en el cuerpo del PR como registro, y nadie los revisa antes del merge.
+Los hallazgos menores que queden abiertos se listan en el cuerpo del PR, para la revisión antes del merge.
 
 ## Fuentes
 

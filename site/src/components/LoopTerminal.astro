@@ -6,7 +6,7 @@ const stages = [
 	{ name: 'loop-path.sh', description: 'hay código: va a revisión' },
 	{ name: 'review-changes', description: 'revisa el diff' },
 	{ name: 'verify-findings', description: 'confirma los hallazgos' },
-	{ name: 'ship', description: 'PR, checks y merge' },
+	{ name: 'ship', description: 'commit y PR' },
 ];
 const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 ---
@@ -20,7 +20,7 @@ const column = Math.max(...stages.map(({ name }) => name.length)) + 2;
 				<li class="line stage"><span class="marker" aria-hidden="true">✓</span><span class="name">{name}</span><span class="pad" aria-hidden="true">{' '.repeat(column - name.length - 1)}</span>{' '}<span class="arrow" aria-hidden="true">↳</span><span class="description">{description}</span></li>
 			))}
 		</ol>
-		<p class="line final"><span class="marker" aria-hidden="true">✓</span>issue #24 cerrado y mergeado</p>
+		<p class="line final"><span class="marker" aria-hidden="true">✓</span>PR #24 listo para revisar</p>
 	</div>
 </div>
 

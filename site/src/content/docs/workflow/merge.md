@@ -2,27 +2,19 @@
 title: Merge
 sidebar:
   order: 7
-description: Cómo la skill ship mergea el PR con merge.sh.
+description: Cómo se mergea el PR después de revisarlo.
 ---
 
-Después de `publish` y del retiro del pie, la skill `ship` mergea solo con `scripts/merge.sh <pr>`.
+El loop termina con el PR abierto y listo para revisar. Una persona lo revisa y, si está bien, lo mergea.
 
-:::caution
-Nunca mergees de otra forma: ni `gh pr merge`, ni la interfaz web, ni otra llamada a la API.
-:::
+## Qué necesita el PR antes del merge
 
-## Qué exige el script
+- Base en `main`, mergeable y sin checks fallando.
+- El status requerido `Vercel` reportado y exitoso.
 
-- El PR abierto, con base en `main`, mergeable y sin checks fallando.
-- Que el status requerido `Vercel` (`REQUIRED_STATUS` en el script) esté reportado y exitoso: espera hasta que lo esté.
+## Cómo
 
-## Qué hace
-
-Hace squash por la API REST con `<título del PR> (#<N>)` como título. Squash es el único método habilitado en la configuración del repo. Al terminar imprime `verified` y `reason` del commit de merge, y la sesión los reporta.
-
-El commit de squash lo firma GitHub y llega a `main` como un solo commit con el título del PR y el número.
-
-La sesión nunca ofrece vigilar el PR.
+Squash es el único método habilitado en la configuración del repo. El título del commit es `<título del PR> (#<N>)`, y llega a `main` como un solo commit firmado por GitHub.
 
 ## Fuentes
 
