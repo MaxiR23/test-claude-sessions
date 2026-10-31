@@ -2,32 +2,24 @@
 title: Introducción
 sidebar:
   order: 1
-description: El loop de agentes que lleva un issue de la idea al merge.
+description: El loop de agentes que lleva un issue de la idea al pull request.
 ---
 
 import LoopFlow from '../../../components/LoopFlow.astro';
 
-El loop corre en una sesión en la nube de punta a punta, merge incluido. La sesión actúa como orquestadora: despacha cada etapa por nombre con una instrucción de una línea y no implementa nada.
+El loop corre en una sesión en la nube y lleva un issue hasta un pull request listo para revisar. La sesión actúa como orquestadora: despacha cada etapa por nombre con una instrucción de una línea y no implementa nada.
 
 <LoopFlow />
 
-- **create-issue / refine-issue**: crean o completan el issue. Ver [Issues](/workflow/issues/).
-- **plan-issue**: escribe el plan, solo para issues no triviales. Ver [Plan e implementación](/workflow/plan-e-implementacion/).
-- **implement-issue**: implementa el plan y corre el gate. Ver [Plan e implementación](/workflow/plan-e-implementacion/).
-- **scripts/loop-path.sh**: decide el camino, corto o completo. Ver [Revisión](/workflow/revision/).
-- **review-changes** y **verify-findings**: revisan y confirman hallazgos. Ver [Revisión](/workflow/revision/).
-- **implement-issue en modo fix**: corrige lo confirmado, en un solo ciclo.
-- **ship**: commit, publicación, retiro del pie y merge. Ver [Rama, commit y publicación](/workflow/publicacion/), [Quitar el pie de atribución](/workflow/pie-de-atribucion/) y [Merge](/workflow/merge/).
-
 Si algo falla, [Recuperación](/workflow/recuperacion/) dice qué hacer en cada caso.
 
-:::caution
-En ninguna etapa nadie da un visto bueno. La única parada es una pregunta BLOCKING abierta en el issue: se escribe ahí y el loop se detiene en ese issue.
+:::tip
+Revisá el PR antes de mergear. El loop lo deja listo; el merge siempre lo decide una persona.
 :::
 
 ## Por qué las reglas se aplican con código
 
-`CLAUDE.md` fija las reglas de ramas, commits y pull requests, y cada sesión en la nube lo carga. Pero las instrucciones son consejos: una sesión puede interpretarlas mal, olvidarlas después de una conversación larga o seguir una instrucción del entorno que las contradice, como el nombre de rama al que se le dice que pushee. Un script no se deja convencer de saltarse un chequeo. `scripts/ship.sh`, `scripts/issue.sh` y `scripts/merge.sh` convierten cada regla en una prueba que pasa o frena la ejecución con un mensaje. Así, una sesión que sigue `CLAUDE.md` y una que no terminan con la misma rama, el mismo mensaje de commit y la misma forma de PR.
+`CLAUDE.md` fija las reglas de ramas, commits y pull requests, y cada sesión en la nube lo carga. Pero las instrucciones son consejos: una sesión puede interpretarlas mal, olvidarlas después de una conversación larga o seguir una instrucción del entorno que las contradice, como el nombre de rama al que se le dice que pushee. Un script no se deja convencer de saltarse un chequeo. `scripts/ship.sh` y `scripts/issue.sh` convierten cada regla en una prueba que pasa o frena la ejecución con un mensaje. Así, una sesión que sigue `CLAUDE.md` y una que no terminan con la misma rama, el mismo mensaje de commit y la misma forma de PR.
 
 ## Fuentes
 
