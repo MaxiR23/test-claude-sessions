@@ -21,6 +21,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-danger-bg` | `color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))` | Caution aside background |
 | `--color-accent-bg` | `color-mix(in srgb, var(--color-accent) 15%, var(--color-bg))` | Accent-low surfaces, e.g. selected sidebar item |
 | `--color-accent-shadow` | `color-mix(in srgb, var(--color-accent) 35%, transparent)` | Soft shadow of the primary hero action on hover and focus |
+| `--color-accent-border` | `color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline))` | Border of a loop flow stage on hover, following the theme's accent |
 
 ### Typography
 
@@ -90,6 +91,9 @@ created.
 | `--duration-stagger` | 0.1s | Delay between consecutive hero elements |
 | `--duration-type` | 0.06s | Time to type one character of the hero status line and the loop terminal command |
 | `--duration-type-detail` | 0.015s | Time to type one character of a loop flow detail line |
+| `--duration-type-start` | 0.15s | Pause before a loop flow stage starts typing its first line |
+| `--duration-type-gap` | 0.09s | Pause between two typed loop flow detail lines |
+| `--duration-expand` | 0.3s | Expand and collapse of a loop flow stage, its chevron turn and its link fade-in |
 | `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links |
 | `--duration-run-start` | 0.5s | Pause before the loop terminal starts typing |
 | `--duration-run-appear` | 0.22s | Delay between consecutive loop terminal stages appearing |
@@ -176,25 +180,38 @@ over `--duration-flow`, in a loop. Under
 `prefers-reduced-motion: reduce` they do not animate and stay visible in
 the accent color at reduced opacity.
 
-Each stage is a box whose header is a button: the name in mono, an
-optional note in the muted body font, and at top right a mono chip with
-the type (`skill`, `agente`, `script`) and a chevron. `ship` shows the
-always-visible `prepare › publish` chips. Clicking the button (or Enter
-or Space) toggles the box, and only one is open at a time. The open box
-gets the accent border and accent name, and the chevron rotates
+Each stage is a native `<details>` box whose header is its `<summary>`:
+the name in mono, an optional note in the muted body font, and at top
+right a mono chip with the type (`skill`, `agente`, `script`) and a
+chevron. `ship` shows its `prepare › publish` chips inside the summary,
+always visible. Chips have `--radius-full` corners. Every stage starts
+closed in the HTML, with or without JavaScript. On hover a stage's
+border turns `--color-accent-border`. The open stage gets the accent
+border and accent name, and its chevron turns accent and rotates
 `--rotate-open`.
 
-The panel expands over `--duration-enter`. Its lines, each after a muted
-`$`, are typed one after the other at `--duration-type-detail` per
-character, with no cursor. Then the link to the stage's page fades in
-over `--duration-fade`, aligned right, and its arrow moves `--space-1`
-right on hover and focus over `--duration-hover`. A closed panel is
-`visibility: hidden`, so it is not in the Tab order. The button has
-`aria-expanded` and `aria-controls`, and the panel is a region labelled
-by its button. Focusing inside a panel that is still typing completes
-it. Under reduced motion there is no dot animation, no typing and no
-transitions, and the panel opens with its full text at once. Without
-JavaScript every panel is open and static.
+With JavaScript, the script takes over the summary click (and Enter):
+only one stage is open at a time, opening one collapses the other, and a
+stage expands and collapses over `--duration-expand`. The detail lines,
+each after a muted `$`, are in `--font-mono` at `--sl-text-xs` in the
+muted color; inline code in them keeps the text color at weight 400.
+Each line keeps at least one line of height while it waits. After
+`--duration-type-start`, the lines are typed one after the other as
+plain text at `--duration-type-detail` per character, with
+`--duration-type-gap` between lines and no cursor; each line gets its
+formatted markup back as soon as it is typed. Then the link to the
+stage's page fades in over `--duration-expand`, in `--font-mono` at
+`--sl-text-xs` in the accent color, aligned right; its arrow moves
+`--space-1` right on hover and focus over `--duration-hover`. Closing a
+stage stops its typing and restores its text. Focusing inside a stage
+that is still typing completes it. The script only toggles attributes
+and text on elements the component renders, so the scoped styles apply
+to every state.
+
+Under reduced motion there is no dot animation, no typing and no
+transitions: a stage opens and closes at once, with its full text.
+Without JavaScript the stages are plain `<details>`: closed at first,
+full text when opened, and several can be open at once.
 
 Use it where a page needs to show the loop's flow with its branches. Do
 not use it for linear steps: use Starlight `Steps`. Do not use it for
