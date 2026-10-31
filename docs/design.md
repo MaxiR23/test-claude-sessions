@@ -244,7 +244,10 @@ and the body padding `--space-2` `--space-3`. At md and up they are
 while visible on screen and the tab is visible. Accessibility: the text
 is static in the DOM, the prompt, cursor, markers, `↳` and name padding
 are `aria-hidden`, and nothing is announced per cycle. Under reduced motion or without
-JavaScript it shows the final state at once and nothing moves. Use it
+JavaScript it shows the final state at once and nothing moves. It
+follows the setting while the page is open: turning reduced motion on
+stops the run at once in the final state, and turning it off starts the
+run again from the beginning. Use it
 only for the home's run; for other commands and transcripts use the
 terminal block.
 
