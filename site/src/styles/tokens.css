@@ -40,6 +40,7 @@
 	--duration-enter: 0.4s;
 	--duration-stagger: 0.1s;
 	--duration-type: 0.06s;
+	--duration-type-detail: 0.015s;
 	--duration-hover: 0.15s;
 	--duration-run-start: 0.5s;
 	--duration-run-appear: 0.22s;
@@ -47,6 +48,8 @@
 	--duration-run-stage-min: 0.7s;
 	--duration-run-stage-max: 1.4s;
 	--duration-run-pause: 2.6s;
+
+	--rotate-open: 0.5turn;
 
 	--sl-font: var(--font-body);
 	--sl-font-mono: var(--font-mono);

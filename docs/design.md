@@ -89,6 +89,7 @@ created.
 | `--duration-enter` | 0.4s | Fade-and-rise of one hero element or one loop terminal line |
 | `--duration-stagger` | 0.1s | Delay between consecutive hero elements |
 | `--duration-type` | 0.06s | Time to type one character of the hero status line and the loop terminal command |
+| `--duration-type-detail` | 0.015s | Time to type one character of a loop flow detail line |
 | `--duration-hover` | 0.15s | Hover and focus movement of the hero actions and the guide index links |
 | `--duration-run-start` | 0.5s | Pause before the loop terminal starts typing |
 | `--duration-run-appear` | 0.22s | Delay between consecutive loop terminal stages appearing |
@@ -96,6 +97,7 @@ created.
 | `--duration-run-stage-min` | 0.7s | Shortest spinner time of one loop terminal stage |
 | `--duration-run-stage-max` | 1.4s | Longest spinner time of one loop terminal stage |
 | `--duration-run-pause` | 2.6s | Pause after the final line before the loop terminal repeats |
+| `--rotate-open` | 0.5turn | Rotation of the open loop flow chevron |
 
 Every animation is declared inside
 `@media (prefers-reduced-motion: no-preference)`; under `reduce` the
@@ -172,9 +174,30 @@ stage except the first is preceded by a connector of three
 `aria-hidden`. The dots fade in one after the other from top to bottom
 over `--duration-flow`, in a loop. Under
 `prefers-reduced-motion: reduce` they do not animate and stay visible in
-the accent color at reduced opacity. Use
-it where a page needs to show the loop's flow with its branches. Do not
-use it for linear steps: use Starlight `Steps`. Do not use it for
+the accent color at reduced opacity.
+
+Each stage is a box whose header is a button: the name in mono, an
+optional note in the muted body font, and at top right a mono chip with
+the type (`skill`, `agente`, `script`) and a chevron. `ship` shows the
+always-visible `prepare › publish` chips. Clicking the button (or Enter
+or Space) toggles the box, and only one is open at a time. The open box
+gets the accent border and accent name, and the chevron rotates
+`--rotate-open`.
+
+The panel expands over `--duration-enter`. Its lines, each after a muted
+`$`, are typed one after the other at `--duration-type-detail` per
+character, with no cursor. Then the link to the stage's page fades in
+over `--duration-fade`, aligned right, and its arrow moves `--space-1`
+right on hover and focus over `--duration-hover`. A closed panel is
+`visibility: hidden`, so it is not in the Tab order. The button has
+`aria-expanded` and `aria-controls`, and the panel is a region labelled
+by its button. Focusing inside a panel that is still typing completes
+it. Under reduced motion there is no dot animation, no typing and no
+transitions, and the panel opens with its full text at once. Without
+JavaScript every panel is open and static.
+
+Use it where a page needs to show the loop's flow with its branches. Do
+not use it for linear steps: use Starlight `Steps`. Do not use it for
 commands: use the terminal block.
 
 ### Loop terminal
@@ -250,7 +273,9 @@ terminal block.
   Below md the description drops to its own line under the name; at md
   and up each stage is one line with the name padded to a column. Keep
   lines under 40 characters below md.
-- Loop flow: one vertical column at all sizes, with no breakpoint.
+- Loop flow: one vertical column at all sizes. Below md the note wraps
+  under the stage name; at md and up it sits on the name's line. The
+  type tag and the chevron always stay at the top right.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
 - Theme select (Starlight's, header): at md and up its width is set by overriding `--sl-select-width` on the select to `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish label ("Automático") shows in full with its icon and caret. Below md it keeps Starlight's width.
