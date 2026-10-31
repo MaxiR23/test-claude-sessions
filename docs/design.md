@@ -79,6 +79,7 @@ created.
 | `--size-touch` | 2.75rem (44 px) | Minimum touch target |
 | `--focus-ring-width` | 2px | Focus outline width |
 | `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot and loop terminal title bar dot diameter |
+| `--size-select` | 6.25em | Language select width below md, equal to Starlight's theme select width |
 
 ### Motion
 
@@ -182,7 +183,7 @@ the accent color at reduced opacity.
 
 Each stage is a native `<details>` box whose header is its `<summary>`:
 the name in mono, an optional note in the muted body font, and at top
-right a mono chip with the type (`skill`, `agente`, `script`) and a
+right a mono chip with the type (`skill`, `agente`/`agent`, `script`) and a
 chevron. `ship` shows its `prepare › publish` chips inside the summary,
 always visible. Chips have `--radius-full` corners. Every stage starts
 closed in the HTML, with or without JavaScript. On hover a stage's
@@ -222,7 +223,7 @@ commands: use the terminal block.
 `site/src/components/LoopTerminal.astro`, imported in `index.mdx` and
 placed as `<LoopTerminal />`. A terminal frame like the terminal block
 (surface body, border, title bar with three muted `--size-dot` dots and
-the centered title `sesión en la nube`) that shows one loop run for
+the centered title `sesión en la nube` / `cloud session`) that shows one loop run for
 issue #24. The run has three phases. Typing: after `--duration-run-start`
 the command is typed at `--duration-type` per character, with the `_`
 cursor blinking over `--duration-blink`. Stages: they appear
@@ -245,6 +246,19 @@ are `aria-hidden`, and nothing is announced per cycle. Under reduced motion or w
 JavaScript it shows the final state at once and nothing moves. Use it
 only for the home's run; for other commands and transcripts use the
 terminal block.
+
+### Locales and translations
+
+- The locales are declared once in `site/src/locales.mjs`: Spanish `root`
+  (`lang: es`, the default, at the root paths) and English `en` at `/en/`
+  with the same slugs.
+- Interface strings live in `site/src/content/i18n/es.json` and `en.json`.
+  They are read with `Astro.locals.t()` in components and from the same
+  files in `astro.config.mjs` (title and sidebar labels).
+- No interface string is a literal in `site/src/components/` or
+  `astro.config.mjs`. Code (stage names, commands) stays the same in both
+  languages.
+- Untranslated English pages show Starlight's fallback to the Spanish page.
 
 ### Overrides
 
@@ -276,6 +290,16 @@ terminal block.
   Only this button scrolls smoothly: there is no site-wide
   `scroll-behavior`, so other in-page links still jump. Without JavaScript
   the link jumps to `#_top`.
+- Head with language detection: `site/src/components/Head.astro`.
+  - A choice stored in `localStorage` (`site-locale`) wins.
+  - Otherwise the first entry of `navigator.languages` picks the locale
+    with the same primary language. Anything else stays Spanish.
+  - A mismatch redirects with `location.replace` to the same slug. Without
+    JavaScript there is no redirect.
+- Language select: `site/src/components/LanguageSelect.astro`. Starlight's
+  select, with the choice stored on change. Without JavaScript it is
+  replaced by a `<noscript>` link to the other locale with the `translate`
+  icon.
 
 ## 4. Responsive rules
 
@@ -295,7 +319,7 @@ terminal block.
   type tag and the chevron always stay at the top right.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
-- Theme select (Starlight's, header): at md and up its width is set by overriding `--sl-select-width` on the select to `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish label ("Automático") shows in full with its icon and caret. Below md it keeps Starlight's width.
+- Theme select and language select (Starlight's, header): at md and up their width is set by overriding `--sl-select-width` on the select to `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish label ("Automático") shows in full with its icon and caret. Below md the theme select keeps Starlight's width and the language select uses `--size-select` to equal it; both sit where Starlight places them (the mobile menu).
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
@@ -320,7 +344,7 @@ terminal block.
   back-to-top button.
 - Visible focus: every focusable element shows a `--focus-ring-width` solid
   `--color-accent` outline on `:focus-visible`.
-- Icon-only controls carry an accessible label (back-to-top: `Volver
-  arriba`).
+- Icon-only controls carry an accessible label (back-to-top:
+  `footer.backToTop`, "Volver arriba" / "Back to top").
 - Decorative text (the site title's `~/` form) is `aria-hidden`, with the
   real title exposed to assistive tech.

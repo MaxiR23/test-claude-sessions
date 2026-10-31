@@ -1,0 +1,38 @@
+---
+import Default from '@astrojs/starlight/components/LanguageSelect.astro';
+import { Icon } from '@astrojs/starlight/components';
+import { locales, localeBase } from '../locales.mjs';
+
+const current = localeBase(Astro.locals.starlightRoute.locale);
+const rest = Astro.url.pathname.slice(current.length) || '/';
+const others = Object.entries(locales)
+	.filter(([key]) => localeBase(key) !== current)
+	.map(([key, { label, lang }]) => ({ href: localeBase(key) + rest, label, lang }));
+---
+
+<Default />
+<noscript>
+	<style is:inline>starlight-lang-select { display: none; }</style>
+	{others.map(({ href, label, lang }) => (
+		<a class="lang-link" href={href} hreflang={lang} lang={lang}><Icon name="translate" />{label}</a>
+	))}
+</noscript>
+
+<style>
+	.lang-link {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+		min-block-size: var(--size-touch);
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+	}
+	.lang-link:hover {
+		color: var(--sl-color-white);
+	}
+	@media (min-width: 50rem) {
+		.lang-link {
+			font-size: var(--sl-text-sm);
+		}
+	}
+</style>

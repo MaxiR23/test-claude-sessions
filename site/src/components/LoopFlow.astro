@@ -1,93 +1,97 @@
 ---
 import { Icon } from '@astrojs/starlight/components';
+import { localeBase } from '../locales.mjs';
+
+const t = Astro.locals.t;
+const base = localeBase(Astro.locals.starlightRoute.locale);
 
 const stages = [
 	{
 		name: 'create-issue / refine-issue',
-		note: 'abre o completa el issue',
-		tag: 'skill',
+		note: t('loopFlow.createIssue.note'),
+		tag: t('loopFlow.tag.skill'),
 		lines: [
-			'`create-issue` abre el issue con `scripts/issue.sh`: un tipo y un título.',
-			'`refine-issue` completa uno que ya existe.',
-			'El cuerpo del issue es el alcance congelado del cambio.',
-			'Una pregunta BLOCKING abierta frena el loop en ese issue, en cualquier etapa.',
+			t('loopFlow.createIssue.line1'),
+			t('loopFlow.createIssue.line2'),
+			t('loopFlow.createIssue.line3'),
+			t('loopFlow.createIssue.line4'),
 		],
-		link: { text: 'Issues', href: '/workflow/issues/' },
+		link: { text: t('loopFlow.link.issues'), href: '/workflow/issues/' },
 	},
 	{
 		name: 'plan-issue',
-		note: 'obligatorio si cambia comportamiento',
-		tag: 'agente',
+		note: t('loopFlow.planIssue.note'),
+		tag: t('loopFlow.tag.agent'),
 		lines: [
-			'Corre si el issue cambia comportamiento, una página, un componente o la estructura.',
-			'Un typo o un ajuste de docs o config va directo a implementar.',
-			'Escribe el plan archivo por archivo, con cómo se verifica.',
+			t('loopFlow.planIssue.line1'),
+			t('loopFlow.planIssue.line2'),
+			t('loopFlow.planIssue.line3'),
 		],
-		link: { text: 'Plan e implementación', href: '/workflow/plan-e-implementacion/' },
+		link: { text: t('loopFlow.link.plan'), href: '/workflow/plan-e-implementacion/' },
 	},
 	{
 		name: 'implement-issue',
-		note: 'código y gate',
-		tag: 'agente',
+		note: t('loopFlow.implementIssue.note'),
+		tag: t('loopFlow.tag.agent'),
 		lines: [
-			'Implementa el plan, o el issue directo si no hizo falta plan.',
-			'Corre el gate una vez al final: el build del sitio, hasta tres intentos.',
-			'No commitea: eso lo hace `ship`.',
+			t('loopFlow.implementIssue.line1'),
+			t('loopFlow.implementIssue.line2'),
+			t('loopFlow.implementIssue.line3'),
 		],
-		link: { text: 'Plan e implementación', href: '/workflow/plan-e-implementacion/' },
+		link: { text: t('loopFlow.link.plan'), href: '/workflow/plan-e-implementacion/' },
 	},
 	{
 		name: 'loop-path.sh',
-		tag: 'script',
+		tag: t('loopFlow.tag.script'),
 		lines: [
-			'Mira los archivos cambiados e imprime `short` o `full`.',
-			'`short`: todos son `.md` y ninguno es configuración del loop.',
-			'Decide el script, no el criterio de la sesión.',
+			t('loopFlow.loopPath.line1'),
+			t('loopFlow.loopPath.line2'),
+			t('loopFlow.loopPath.line3'),
 		],
-		link: { text: 'Revisión', href: '/workflow/revision/' },
+		link: { text: t('loopFlow.link.review'), href: '/workflow/revision/' },
 		branches: [
-			{ arrow: '→ ', text: 'corto: pasa a `ship`' },
-			{ arrow: '↓ ', text: 'completo: sigue con `review-changes`' },
+			{ arrow: '→ ', text: t('loopFlow.loopPath.branchShort') },
+			{ arrow: '↓ ', text: t('loopFlow.loopPath.branchFull') },
 		],
 	},
 	{
 		name: 'review-changes',
-		tag: 'agente',
+		tag: t('loopFlow.tag.agent'),
 		lines: [
-			'Una pasada sobre el diff contra `origin/main` y lo no commiteado.',
-			'Cada hallazgo necesita un escenario de falla o una regla que rompa.',
-			'Solo lee: no corrige nada.',
+			t('loopFlow.reviewChanges.line1'),
+			t('loopFlow.reviewChanges.line2'),
+			t('loopFlow.reviewChanges.line3'),
 		],
-		link: { text: 'Revisión', href: '/workflow/revision/' },
+		link: { text: t('loopFlow.link.review'), href: '/workflow/revision/' },
 		branches: [
-			{ arrow: '→ ', text: 'sin hallazgos BLOCKING ni IMPORTANT: pasa a `ship`' },
-			{ arrow: '↓ ', text: 'con hallazgos BLOCKING o IMPORTANT: sigue con `verify-findings`' },
+			{ arrow: '→ ', text: t('loopFlow.reviewChanges.branchClean') },
+			{ arrow: '↓ ', text: t('loopFlow.reviewChanges.branchFindings') },
 		],
 	},
 	{
 		name: 'verify-findings',
-		tag: 'agente',
+		tag: t('loopFlow.tag.agent'),
 		lines: [
-			'Relee el código real y separa problemas de falsos positivos.',
-			'Deja la lista de qué corregir para `implement-issue`.',
+			t('loopFlow.verifyFindings.line1'),
+			t('loopFlow.verifyFindings.line2'),
 		],
-		link: { text: 'Revisión', href: '/workflow/revision/' },
+		link: { text: t('loopFlow.link.review'), href: '/workflow/revision/' },
 	},
 	{
-		name: 'implement-issue (modo fix)',
-		tag: 'agente',
+		name: `implement-issue (${t('loopFlow.fixMode')})`,
+		tag: t('loopFlow.tag.agent'),
 		lines: [
-			'Corrige solo lo confirmado, en un solo ciclo.',
-			'Los hallazgos menores quedan anotados en el PR para la revisión.',
+			t('loopFlow.fix.line1'),
+			t('loopFlow.fix.line2'),
 		],
-		link: { text: 'Plan e implementación', href: '/workflow/plan-e-implementacion/' },
+		link: { text: t('loopFlow.link.plan'), href: '/workflow/plan-e-implementacion/' },
 	},
 	{
 		name: 'ship',
-		tag: 'skill',
+		tag: t('loopFlow.tag.skill'),
 		steps: ['prepare', 'publish'],
-		lines: ['`prepare`: crea la rama y commitea.', '`publish`: pushea y abre el PR.'],
-		link: { text: 'Rama, commit y publicación', href: '/workflow/publicacion/' },
+		lines: [t('loopFlow.ship.line1'), t('loopFlow.ship.line2')],
+		link: { text: t('loopFlow.link.publish'), href: '/workflow/publicacion/' },
 	},
 ];
 
@@ -95,7 +99,7 @@ const parts = (text) => text.split('`'); // odd indexes are code
 ---
 
 
-<ol class="loop-flow not-content" aria-label="Flujo del loop">
+<ol class="loop-flow not-content" aria-label={t('loopFlow.label')}>
 	{
 		stages.map((stage, i) => (
 			<li>
@@ -127,7 +131,7 @@ const parts = (text) => text.split('`'); // odd indexes are code
 								{stage.lines.map((line) => (
 									<p class="line"><span class="prompt" aria-hidden="true">$ </span><span class="text">{parts(line).map((part, j) => (j % 2 === 1 ? <code>{part}</code> : part))}</span></p>
 								))}
-								<a class="more" href={stage.link.href}>{stage.link.text}<span class="more-arrow" aria-hidden="true"><Icon name="right-arrow" /></span></a>
+								<a class="more" href={`${base}${stage.link.href}`}>{stage.link.text}<span class="more-arrow" aria-hidden="true"><Icon name="right-arrow" /></span></a>
 							</div>
 						</div>
 					</div>

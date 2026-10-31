@@ -4,7 +4,7 @@ import { Icon } from '@astrojs/starlight/components';
 ---
 
 <Default><slot /></Default>
-<a href="#_top" class="back-to-top" aria-label="Volver arriba">
+<a href="#_top" class="back-to-top" aria-label={Astro.locals.t('footer.backToTop')}>
 	<Icon name="up-arrow" />
 </a>
 <script is:inline>
