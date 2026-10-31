@@ -160,6 +160,8 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 		const stages = [...root.querySelectorAll('details.node')];
 		const runs = new WeakMap();
+		// Stages the script is opening, until data-expanded is set.
+		const opening = new WeakSet();
 		const later = (fn, delay) => setTimeout(fn, delay);
 
 		// Puts every line back to its original markup, fully visible.
@@ -226,8 +228,14 @@ const parts = (text) => text.split('`'); // odd indexes are code
 				return;
 			}
 			type(stage);
+			opening.add(stage);
 			// Two frames so the collapsed state is painted before it expands.
-			requestAnimationFrame(() => requestAnimationFrame(() => stage.setAttribute('data-expanded', '')));
+			requestAnimationFrame(() =>
+				requestAnimationFrame(() => {
+					stage.setAttribute('data-expanded', '');
+					opening.delete(stage);
+				}),
+			);
 		};
 
 		const close = (stage) => {
@@ -241,6 +249,12 @@ const parts = (text) => text.split('`'); // odd indexes are code
 			else later(done, expand);
 		};
 
+		const closeOthers = (stage) => {
+			stages.forEach((other) => {
+				if (other !== stage && other.hasAttribute('data-expanded')) close(other);
+			});
+		};
+
 		root.setAttribute('data-enhanced', '');
 		stages.forEach((stage) => {
 			stage.querySelector('summary').addEventListener('click', (event) => {
@@ -249,13 +263,18 @@ const parts = (text) => text.split('`'); // odd indexes are code
 					close(stage);
 					return;
 				}
-				stages.forEach((other) => {
-					if (other !== stage && other.hasAttribute('data-expanded')) close(other);
-				});
+				closeOthers(stage);
 				open(stage);
 			});
 			// Focus inside a stage that is still typing completes it.
 			stage.querySelector('.panel-body').addEventListener('focusin', () => restore(stage));
+			// A native open (find in page) shows the stage at once, with its full text.
+			stage.addEventListener('toggle', () => {
+				if (!stage.open || stage.hasAttribute('data-expanded') || opening.has(stage)) return;
+				closeOthers(stage);
+				restore(stage);
+				stage.setAttribute('data-expanded', '');
+			});
 		});
 	})();
 </script>
@@ -413,8 +432,8 @@ const parts = (text) => text.split('`'); // odd indexes are code
 		text-decoration: none;
 	}
 	.more[data-pending] {
-		visibility: hidden;
 		opacity: 0;
+		pointer-events: none;
 	}
 	.more-arrow {
 		display: inline-flex;
@@ -432,9 +451,7 @@ const parts = (text) => text.split('`'); // odd indexes are code
 				color var(--duration-hover) ease;
 		}
 		.more {
-			transition:
-				opacity var(--duration-expand) ease,
-				visibility var(--duration-expand);
+			transition: opacity var(--duration-expand) ease;
 		}
 		.more-arrow {
 			transition: translate var(--duration-hover) ease-out;

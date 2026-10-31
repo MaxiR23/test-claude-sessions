@@ -205,8 +205,11 @@ formatted markup back as soon as it is typed. Then the link to the
 stage's page fades in over `--duration-expand`, in `--font-mono` at
 `--sl-text-xs` in the accent color, aligned right; its arrow moves
 `--space-1` right on hover and focus over `--duration-hover`. Closing a
-stage stops its typing and restores its text. Focusing inside a stage
-that is still typing completes it. The script only toggles attributes
+stage stops its typing and restores its text. While a stage types, its link is invisible but stays in the tab order,
+so Tab from the open stage's summary reaches it; focusing inside a stage
+that is still typing completes it at once, with every line and the link
+shown. A stage opened natively, as find in page does, shows expanded at
+once with its full text and no typing, and closes the other open stage. The script only toggles attributes
 and text on elements the component renders, so the scoped styles apply
 to every state.
 
