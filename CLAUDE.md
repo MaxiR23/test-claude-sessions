@@ -10,9 +10,9 @@ cases.
   `scripts/ship.sh`, through the `ship` skill.
 - Never create issues by hand. Only `scripts/issue.sh`, through the
   `create-issue` skill.
-- Merge a pull request only with `scripts/merge.sh`, after `publish` and
-  the footer removal step. Never merge any other way: no `gh pr merge`, no
-  web UI, no other API call.
+- The session never merges a pull request, in any way: no `scripts/merge.sh`,
+  no `gh pr merge`, no web UI, no other API call. The loop ends with the PR
+  published and the footer removed; a person reviews and merges it.
 - Never use GraphQL: it is blocked in cloud sessions. That rules out
   `gh issue create`, `gh issue edit`, `gh issue view`, `gh pr create` and
   `gh pr edit` as direct calls. Read with `gh api` (REST) or the built-in
@@ -40,9 +40,9 @@ and do not implement.
     review-changes                (agent, full path)
     verify-findings               (agent, only on BLOCKING or IMPORTANT)
     implement-issue, fix mode     (agent, only if verify confirmed fixes)
-    ship                          (skill: prepare, publish, footer removal, merge)
+    ship                          (skill: prepare, publish, footer removal; ends here)
 
-There is no owner approval at any stage. The only stop is a BLOCKING open
+There is no owner approval at any stage; the person reviews the PR after the loop. The only stop is a BLOCKING open
 question in the issue: write it in the issue and stop the loop on it.
 
 ## Gate
