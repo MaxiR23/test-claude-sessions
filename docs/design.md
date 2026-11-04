@@ -21,7 +21,7 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-danger-bg` | `color-mix(in srgb, var(--color-danger) 12%, var(--color-surface))` | Caution aside background |
 | `--color-accent-bg` | `color-mix(in srgb, var(--color-accent) 15%, var(--color-bg))` | Accent-low surfaces, e.g. selected sidebar item |
 | `--color-accent-shadow` | `color-mix(in srgb, var(--color-accent) 35%, transparent)` | Soft shadow of the primary hero action on hover and focus |
-| `--color-accent-border` | `color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline))` | Border of a loop flow stage on hover, following the theme's accent |
+| `--color-accent-border` | `color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline))` | Border of a loop flow stage on hover |
 | `--gradient-star-trail` | `linear-gradient(to right, transparent, var(--color-accent))` | Starfield shooting-star trail, transparent to accent with the bright end leading |
 
 ### Typography
@@ -80,7 +80,6 @@ created.
 | `--size-touch` | 2.75rem (44 px) | Minimum touch target |
 | `--focus-ring-width` | 2px | Focus outline width |
 | `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot and loop terminal title bar dot diameter |
-| `--size-select` | 6.25em | Language select width below md, equal to Starlight's theme select width |
 | `--size-star-far` | 0.0625rem (1 px) | Diameter of a far starfield star |
 | `--size-star-mid` | 0.125rem (2 px) | Diameter of a mid starfield star |
 | `--size-star-near` | 0.1875rem (3 px) | Diameter of a near starfield star |
@@ -178,10 +177,11 @@ other component follows the rule.
 | `--position-shoot-5-x-mobile` | 11.9% | Start x (% of width) of starfield shooting star 5, mobile |
 | `--position-shoot-5-y-mobile` | 78.125rem | Start y (from the top) of starfield shooting star 5, mobile |
 
-### Light theme
+### Dark only
 
-Starlight's default light palette is kept. The tokens apply to the dark
-theme; fonts apply to both.
+The site is dark only: every page renders Starlight's dark theme with
+the tokens above, whatever the device preference or a stored
+`starlight-theme` value. There is no light palette and no theme select.
 
 ## 2. Usage rules
 
@@ -348,12 +348,12 @@ for other commands and transcripts use the terminal block.
 
 `site/src/components/Starfield.astro`, imported in both `index.mdx` files
 and placed as `<Starfield />` after `<LoopTerminal />`. It must stay last
-so it adds no margin to its siblings. It shows in the dark theme only,
-behind the whole main pane from below the header to the bottom, and
-scrolls with the content. The header and the loop terminal stay opaque
-over it. It is CSS only, so it works without JavaScript. The stars come
-from an LCG with seed 42, reset on every render, that emits position,
-opacity and delay fractions; every design value lives in CSS tokens.
+so it adds no margin to its siblings. It shows behind the whole main pane
+from below the header to the bottom, and scrolls with the content. The
+header and the loop terminal stay opaque over it. It is CSS only, so it
+works without JavaScript. The stars come from an LCG with seed 42, reset
+on every render, that emits position, opacity and delay fractions; every
+design value lives in CSS tokens.
 Three layers, with counts desktop/mobile: far 200/90 stars of
 `--size-star-far`, opacity `--opacity-star-far-min` to
 `--opacity-star-far-max`; mid 80/36 of `--size-star-mid`, opacity
@@ -449,6 +449,12 @@ after upgrading Starlight.
   select, with the choice stored on change. Without JavaScript it is
   replaced by a `<noscript>` link to the other locale with the `translate`
   icon.
+- Theme provider: `site/src/components/ThemeProvider.astro`. Starlight's
+  theme script is removed, so `<html>` keeps the `data-theme="dark"`
+  Starlight writes in the HTML, from first paint and without
+  JavaScript. It adds `<meta name="color-scheme" content="dark">`.
+- Theme select: `site/src/components/ThemeSelect.astro`. Renders
+  nothing: there is no theme select in the header or the mobile menu.
 
 ## 4. Responsive rules
 
@@ -468,18 +474,14 @@ after upgrading Starlight.
   type tag and the chevron always stay at the top right.
   Node text wraps inside its box and never scrolls the page.
 - Site title: truncates with `overflow: hidden` instead of wrapping.
-- Theme select and language select (Starlight's, header): at md and up
-  their width is set by overriding `--sl-select-width` on the select to
-  `calc(9ch + var(--space-7))` in `tokens.css`, so the longest Spanish
-  label ("Automático") shows in full with its icon and caret. Below md
-  the theme select keeps Starlight's width and the language select uses
-  `--size-select` to equal it; both sit where Starlight places them (the
-  mobile menu).
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
 - Starfield: below md the mobile counts, every 3rd near star in accent,
   `--space-5` drift and the mobile shooting stars; at md and up the desktop
   counts, every 4th, `--space-7` and the desktop shooting stars. It clips to the
   page and never scrolls it horizontally.
+- Language select: below md it sits in Starlight's mobile menu footer at
+  the start (left) edge, at Starlight's own width; at md and up it sits in
+  the header at the end (right) edge.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
 ## 5. Accessibility minimums

@@ -35,7 +35,6 @@
 	--size-touch: 2.75rem;
 	--focus-ring-width: 2px;
 	--size-dot: 0.3125rem;
-	--size-select: 6.25em;
 	--size-star-far: 0.0625rem;
 	--size-star-mid: 0.125rem;
 	--size-star-near: 0.1875rem;
@@ -161,16 +160,6 @@ h1#_top {
 :focus-visible {
 	outline: var(--focus-ring-width) solid var(--sl-color-text-accent);
 	outline-offset: var(--space-1);
-}
-
-starlight-lang-select select {
-	--sl-select-width: var(--size-select);
-}
-
-@media (min-width: 50rem) {
-	:is(starlight-theme-select, starlight-lang-select) select {
-		--sl-select-width: calc(9ch + var(--space-7));
-	}
 }
 
 @keyframes cursor-blink {
