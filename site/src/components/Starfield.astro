@@ -112,45 +112,43 @@ const near = layer(20);
 		inset-inline-start: var(--shoot-x);
 		inset-block-start: var(--shoot-y);
 		inline-size: var(--size-trail-length-mobile);
-		block-size: var(--size-trail-width-mobile);
+		block-size: var(--size-trail-width-desktop);
 		background-image: var(--gradient-star-trail);
-		border-radius: var(--radius-full);
-		box-shadow: 0 0 var(--size-trail-glow-mobile) var(--color-star-glow);
 		transform-origin: 0 center;
 		opacity: 0;
 		transform: rotate(var(--shoot-angle));
-		animation: star-shoot-mobile var(--duration-shoot-mobile) ease-in var(--shoot-delay) infinite backwards;
+		animation: star-shoot-mobile var(--duration-shoot-desktop) ease-in var(--shoot-delay) infinite backwards;
 	}
 
 	.shoots span:nth-child(1) {
 		--shoot-x: var(--position-shoot-1-x-mobile);
 		--shoot-y: var(--position-shoot-1-y-mobile);
 		--shoot-angle: var(--rotate-shoot-1-mobile);
-		--shoot-delay: var(--duration-shoot-1-mobile);
+		--shoot-delay: var(--duration-shoot-1-desktop);
 	}
 	.shoots span:nth-child(2) {
 		--shoot-x: var(--position-shoot-2-x-mobile);
 		--shoot-y: var(--position-shoot-2-y-mobile);
 		--shoot-angle: var(--rotate-shoot-2-mobile);
-		--shoot-delay: var(--duration-shoot-2-mobile);
+		--shoot-delay: var(--duration-shoot-2-desktop);
 	}
 	.shoots span:nth-child(3) {
 		--shoot-x: var(--position-shoot-3-x-mobile);
 		--shoot-y: var(--position-shoot-3-y-mobile);
 		--shoot-angle: var(--rotate-shoot-3-mobile);
-		--shoot-delay: var(--duration-shoot-3-mobile);
+		--shoot-delay: var(--duration-shoot-3-desktop);
 	}
 	.shoots span:nth-child(4) {
 		--shoot-x: var(--position-shoot-4-x-mobile);
 		--shoot-y: var(--position-shoot-4-y-mobile);
 		--shoot-angle: var(--rotate-shoot-4-mobile);
-		--shoot-delay: var(--duration-shoot-4-mobile);
+		--shoot-delay: var(--duration-shoot-4-desktop);
 	}
 	.shoots span:nth-child(5) {
 		--shoot-x: var(--position-shoot-5-x-mobile);
 		--shoot-y: var(--position-shoot-5-y-mobile);
 		--shoot-angle: var(--rotate-shoot-5-mobile);
-		--shoot-delay: var(--duration-shoot-5-mobile);
+		--shoot-delay: var(--duration-shoot-5-desktop);
 	}
 
 	@media (min-width: 50rem) {
@@ -249,10 +247,10 @@ const near = layer(20);
 			opacity: 0;
 			transform: rotate(var(--shoot-angle)) translateX(0);
 		}
-		1.5% {
+		0.6% {
 			opacity: 1;
 		}
-		8%,
+		4%,
 		100% {
 			opacity: 0;
 			transform: rotate(var(--shoot-angle)) translateX(var(--size-shoot-travel-mobile));

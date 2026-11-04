@@ -22,7 +22,6 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-accent-bg` | `color-mix(in srgb, var(--color-accent) 15%, var(--color-bg))` | Accent-low surfaces, e.g. selected sidebar item |
 | `--color-accent-shadow` | `color-mix(in srgb, var(--color-accent) 35%, transparent)` | Soft shadow of the primary hero action on hover and focus |
 | `--color-accent-border` | `color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline))` | Border of a loop flow stage on hover, following the theme's accent |
-| `--color-star-glow` | `color-mix(in srgb, var(--color-accent) 60%, transparent)` | Glow of the mobile starfield shooting stars |
 | `--gradient-star-trail` | `linear-gradient(to right, transparent, var(--color-accent))` | Starfield shooting-star trail, transparent to accent with the bright end leading |
 
 ### Typography
@@ -86,12 +85,10 @@ created.
 | `--size-star-mid` | 0.125rem (2 px) | Diameter of a mid starfield star |
 | `--size-star-near` | 0.1875rem (3 px) | Diameter of a near starfield star |
 | `--size-trail-length-desktop` | 8.75rem (140 px) | Starfield shooting-star trail length, md and up |
-| `--size-trail-width-desktop` | 0.0625rem (1 px) | Starfield shooting-star trail width, md and up |
-| `--size-trail-length-mobile` | 8.125rem (130 px) | Starfield shooting-star trail length below md |
-| `--size-trail-width-mobile` | 0.125rem (2 px) | Starfield shooting-star trail width below md |
-| `--size-trail-glow-mobile` | 0.375rem (6 px) | Blur of the starfield shooting-star glow below md |
+| `--size-trail-width-desktop` | 0.0625rem (1 px) | Starfield shooting-star trail width, all sizes |
+| `--size-trail-length-mobile` | 2.375rem (38 px) | Starfield shooting-star trail length below md |
 | `--size-shoot-travel-desktop` | 30rem (480 px) | Distance a starfield shooting star travels, md and up |
-| `--size-shoot-travel-mobile` | 20rem (320 px) | Distance a starfield shooting star travels below md |
+| `--size-shoot-travel-mobile` | 8.125rem (130 px) | Distance a starfield shooting star travels below md |
 
 ### Motion
 
@@ -119,18 +116,12 @@ created.
 | `--duration-drift-far` | 60s | One way of the far starfield layer drift |
 | `--duration-drift-mid` | 40s | One way of the mid starfield layer drift |
 | `--duration-drift-near` | 26s | One way of the near starfield layer drift |
-| `--duration-shoot-desktop` | 35s | Cycle of one starfield shooting star, md and up |
-| `--duration-shoot-mobile` | 15s | Cycle of one starfield shooting star below md |
-| `--duration-shoot-1-desktop` | 2s | Start delay of starfield shooting star 1, md and up |
-| `--duration-shoot-2-desktop` | 9s | Start delay of starfield shooting star 2, md and up |
-| `--duration-shoot-3-desktop` | 16s | Start delay of starfield shooting star 3, md and up |
-| `--duration-shoot-4-desktop` | 23s | Start delay of starfield shooting star 4, md and up |
-| `--duration-shoot-5-desktop` | 30s | Start delay of starfield shooting star 5, md and up |
-| `--duration-shoot-1-mobile` | 1s | Start delay of starfield shooting star 1, below md |
-| `--duration-shoot-2-mobile` | 4s | Start delay of starfield shooting star 2, below md |
-| `--duration-shoot-3-mobile` | 7s | Start delay of starfield shooting star 3, below md |
-| `--duration-shoot-4-mobile` | 10s | Start delay of starfield shooting star 4, below md |
-| `--duration-shoot-5-mobile` | 13s | Start delay of starfield shooting star 5, below md |
+| `--duration-shoot-desktop` | 35s | Cycle of one starfield shooting star, all sizes |
+| `--duration-shoot-1-desktop` | 2s | Start delay of starfield shooting star 1, all sizes |
+| `--duration-shoot-2-desktop` | 9s | Start delay of starfield shooting star 2, all sizes |
+| `--duration-shoot-3-desktop` | 16s | Start delay of starfield shooting star 3, all sizes |
+| `--duration-shoot-4-desktop` | 23s | Start delay of starfield shooting star 4, all sizes |
+| `--duration-shoot-5-desktop` | 30s | Start delay of starfield shooting star 5, all sizes |
 | `--rotate-open` | 0.5turn | Rotation of the open loop flow chevron |
 | `--rotate-shoot-1-desktop` | 28deg | Angle of starfield shooting star 1, md and up |
 | `--rotate-shoot-2-desktop` | 18deg | Angle of starfield shooting star 2, md and up |
@@ -356,12 +347,20 @@ the twinkle multiplies with the star's own opacity. Each layer is wider
 than the page by the drift and drifts sideways: `--space-7` at md and up,
 `--space-5` below, over `--duration-drift-far` (alternate),
 `--duration-drift-mid` (alternate-reverse) and `--duration-drift-near`
-(alternate). Five shooting stars per breakpoint, with a trail of
-`--gradient-star-trail` sized by the `--size-trail-*` tokens (rounded with
-a `--color-star-glow` glow below md only), travelling `--size-shoot-travel-*`
-along their `--rotate-shoot-*` angle from the `--position-shoot-*` start.
-They share one cycle (`--duration-shoot-desktop` or
-`--duration-shoot-mobile`) with staggered delays, so one shows at a time.
+(alternate). Five shooting stars per breakpoint, each a 1 px trail of
+`--gradient-star-trail` (`--size-trail-width-desktop`, no rounding and
+no glow at all sizes), `--size-trail-length-desktop` long at md and up
+and `--size-trail-length-mobile` below, travelling
+`--size-shoot-travel-desktop` or `--size-shoot-travel-mobile` (the
+desktop length and travel scaled by 390 / 1440) along their
+`--rotate-shoot-*` angle from the `--position-shoot-*` start. All sizes
+share one cycle, `--duration-shoot-desktop`, with the same keyframe
+timing and the staggered delays `--duration-shoot-1-desktop` to
+`--duration-shoot-5-desktop`, so one shows at a time, one every 7 s. The desktop
+`@media (min-width: 50rem)` block in `Starfield.astro` intentionally
+repeats values the mobile rule now shares (trail height, no rounding, no
+shadow, cycle and delays); by owner decision it must stay as it is, so do
+not remove it as dead code.
 Accessibility: `aria-hidden`, `pointer-events: none`, no focusable element
 and no text. Reduced motion: it keeps animating (owner exception). Use it
 only on the home; do not add it to other pages.
