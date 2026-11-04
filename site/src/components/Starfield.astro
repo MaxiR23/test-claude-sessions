@@ -1,0 +1,261 @@
+---
+// Desktop counts; CSS hides the extra stars below md.
+let seed = 42;
+const next = () => {
+	seed = (seed * 9301 + 49297) % 233280;
+	return seed / 233280;
+};
+const layer = (count) =>
+	Array.from({ length: count }, () => {
+		const [x, y, o, d] = [next(), next(), next(), next()];
+		return `--star-x: ${x.toFixed(4)}; --star-y: ${y.toFixed(4)}; --star-o: ${o.toFixed(4)}; --star-d: ${d.toFixed(4)}`;
+	});
+const far = layer(200);
+const mid = layer(80);
+const near = layer(20);
+---
+
+<div class="starfield" aria-hidden="true">
+	<div class="layer far">{far.map((style) => <span style={style}></span>)}</div>
+	<div class="layer mid">{mid.map((style) => <span style={style}></span>)}</div>
+	<div class="layer near">{near.map((style) => <span style={style}></span>)}</div>
+	<div class="shoots"><span></span><span></span><span></span><span></span><span></span></div>
+</div>
+
+<style>
+	:global(.main-pane:has(.starfield)) {
+		position: relative;
+	}
+
+	.starfield {
+		--starfield-drift: var(--space-5);
+		display: none;
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: hidden;
+		pointer-events: none;
+		margin: 0;
+	}
+
+	:global(:root[data-theme='dark']) .starfield {
+		display: block;
+	}
+
+	.layer {
+		margin: 0;
+		position: absolute;
+		inset-block: 0;
+		inset-inline-start: 0;
+		inline-size: calc(100% + var(--starfield-drift));
+		animation: star-drift var(--layer-duration) ease-in-out infinite var(--layer-direction);
+	}
+
+	.far {
+		--layer-duration: var(--duration-drift-far);
+		--layer-direction: alternate;
+		--star-size: var(--size-star-far);
+		--star-min: var(--opacity-star-far-min);
+		--star-max: var(--opacity-star-far-max);
+	}
+
+	.mid {
+		--layer-duration: var(--duration-drift-mid);
+		--layer-direction: alternate-reverse;
+		--star-size: var(--size-star-mid);
+		--star-min: var(--opacity-star-mid-min);
+		--star-max: var(--opacity-star-mid-max);
+	}
+
+	.near {
+		--layer-duration: var(--duration-drift-near);
+		--layer-direction: alternate;
+		--star-size: var(--size-star-near);
+		--star-min: var(--opacity-star-near-min);
+		--star-max: var(--opacity-star-near-max);
+	}
+
+	.layer span {
+		position: absolute;
+		inset-inline-start: calc(var(--star-x) * 100%);
+		inset-block-start: calc(var(--star-y) * 100%);
+		inline-size: var(--star-size);
+		block-size: var(--star-size);
+		color: var(--sl-color-white);
+		opacity: calc(var(--star-min) + var(--star-o) * (var(--star-max) - var(--star-min)));
+	}
+
+	.layer span::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: var(--radius-full);
+		background-color: currentColor;
+	}
+
+	:is(.mid, .near) span::before {
+		animation: star-twinkle var(--duration-twinkle) ease-in-out calc(var(--star-d) * var(--duration-star-delay-max)) infinite backwards;
+	}
+
+	.far span:nth-child(n + 91),
+	.mid span:nth-child(n + 37),
+	.near span:nth-child(n + 11) {
+		display: none;
+	}
+
+	.near span:nth-child(3n) {
+		color: var(--sl-color-text-accent);
+	}
+
+	.shoots span {
+		position: absolute;
+		inset-inline-start: var(--shoot-x);
+		inset-block-start: var(--shoot-y);
+		inline-size: var(--size-trail-length-mobile);
+		block-size: var(--size-trail-width-mobile);
+		background-image: var(--gradient-star-trail);
+		border-radius: var(--radius-full);
+		box-shadow: 0 0 var(--size-trail-glow-mobile) var(--color-star-glow);
+		transform-origin: 0 center;
+		opacity: 0;
+		transform: rotate(var(--shoot-angle));
+		animation: star-shoot-mobile var(--duration-shoot-mobile) ease-in var(--shoot-delay) infinite backwards;
+	}
+
+	.shoots span:nth-child(1) {
+		--shoot-x: var(--position-shoot-1-x-mobile);
+		--shoot-y: var(--position-shoot-1-y-mobile);
+		--shoot-angle: var(--rotate-shoot-1-mobile);
+		--shoot-delay: var(--duration-shoot-1-mobile);
+	}
+	.shoots span:nth-child(2) {
+		--shoot-x: var(--position-shoot-2-x-mobile);
+		--shoot-y: var(--position-shoot-2-y-mobile);
+		--shoot-angle: var(--rotate-shoot-2-mobile);
+		--shoot-delay: var(--duration-shoot-2-mobile);
+	}
+	.shoots span:nth-child(3) {
+		--shoot-x: var(--position-shoot-3-x-mobile);
+		--shoot-y: var(--position-shoot-3-y-mobile);
+		--shoot-angle: var(--rotate-shoot-3-mobile);
+		--shoot-delay: var(--duration-shoot-3-mobile);
+	}
+	.shoots span:nth-child(4) {
+		--shoot-x: var(--position-shoot-4-x-mobile);
+		--shoot-y: var(--position-shoot-4-y-mobile);
+		--shoot-angle: var(--rotate-shoot-4-mobile);
+		--shoot-delay: var(--duration-shoot-4-mobile);
+	}
+	.shoots span:nth-child(5) {
+		--shoot-x: var(--position-shoot-5-x-mobile);
+		--shoot-y: var(--position-shoot-5-y-mobile);
+		--shoot-angle: var(--rotate-shoot-5-mobile);
+		--shoot-delay: var(--duration-shoot-5-mobile);
+	}
+
+	@media (min-width: 50rem) {
+		.starfield {
+			--starfield-drift: var(--space-7);
+		}
+
+		.far span:nth-child(n + 91),
+		.mid span:nth-child(n + 37),
+		.near span:nth-child(n + 11) {
+			display: block;
+		}
+
+		.near span:nth-child(3n) {
+			color: var(--sl-color-white);
+		}
+
+		.near span:nth-child(4n) {
+			color: var(--sl-color-text-accent);
+		}
+
+		.shoots span {
+			inline-size: var(--size-trail-length-desktop);
+			block-size: var(--size-trail-width-desktop);
+			border-radius: 0;
+			box-shadow: none;
+			animation-name: star-shoot-desktop;
+			animation-duration: var(--duration-shoot-desktop);
+		}
+
+		.shoots span:nth-child(1) {
+			--shoot-x: var(--position-shoot-1-x-desktop);
+			--shoot-y: var(--position-shoot-1-y-desktop);
+			--shoot-angle: var(--rotate-shoot-1-desktop);
+			--shoot-delay: var(--duration-shoot-1-desktop);
+		}
+		.shoots span:nth-child(2) {
+			--shoot-x: var(--position-shoot-2-x-desktop);
+			--shoot-y: var(--position-shoot-2-y-desktop);
+			--shoot-angle: var(--rotate-shoot-2-desktop);
+			--shoot-delay: var(--duration-shoot-2-desktop);
+		}
+		.shoots span:nth-child(3) {
+			--shoot-x: var(--position-shoot-3-x-desktop);
+			--shoot-y: var(--position-shoot-3-y-desktop);
+			--shoot-angle: var(--rotate-shoot-3-desktop);
+			--shoot-delay: var(--duration-shoot-3-desktop);
+		}
+		.shoots span:nth-child(4) {
+			--shoot-x: var(--position-shoot-4-x-desktop);
+			--shoot-y: var(--position-shoot-4-y-desktop);
+			--shoot-angle: var(--rotate-shoot-4-desktop);
+			--shoot-delay: var(--duration-shoot-4-desktop);
+		}
+		.shoots span:nth-child(5) {
+			--shoot-x: var(--position-shoot-5-x-desktop);
+			--shoot-y: var(--position-shoot-5-y-desktop);
+			--shoot-angle: var(--rotate-shoot-5-desktop);
+			--shoot-delay: var(--duration-shoot-5-desktop);
+		}
+	}
+
+	@keyframes star-drift {
+		to {
+			translate: calc(-1 * var(--starfield-drift)) 0;
+		}
+	}
+
+	@keyframes star-twinkle {
+		from,
+		to {
+			opacity: var(--opacity-twinkle-max);
+		}
+		50% {
+			opacity: var(--opacity-twinkle-min);
+		}
+	}
+
+	@keyframes star-shoot-desktop {
+		0% {
+			opacity: 0;
+			transform: rotate(var(--shoot-angle)) translateX(0);
+		}
+		0.6% {
+			opacity: 1;
+		}
+		4%,
+		100% {
+			opacity: 0;
+			transform: rotate(var(--shoot-angle)) translateX(var(--size-shoot-travel-desktop));
+		}
+	}
+
+	@keyframes star-shoot-mobile {
+		0% {
+			opacity: 0;
+			transform: rotate(var(--shoot-angle)) translateX(0);
+		}
+		1.5% {
+			opacity: 1;
+		}
+		8%,
+		100% {
+			opacity: 0;
+			transform: rotate(var(--shoot-angle)) translateX(var(--size-shoot-travel-mobile));
+		}
+	}
+</style>
