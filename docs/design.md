@@ -470,6 +470,14 @@ PNGs do not.
   select, with the choice stored on change. Without JavaScript it is
   replaced by a `<noscript>` link to the other locale with the `translate`
   icon.
+- Header: `site/src/components/Header.astro`. Starlight's header row
+  rebuilt with Starlight's `Search` and `SocialIcons` and the repo's
+  `SiteTitle` and `LanguageSelect` (no copies). The site title is on the
+  left. The right group holds Starlight's social-icons divider (a
+  `--space-6` tall `--border` line, drawn even with no social links), the
+  search box and the language select, `--space-4` apart. The search sits
+  immediately left of the language select. Below md only the search icon
+  shows in the header, as in Starlight.
 - Theme provider: `site/src/components/ThemeProvider.astro`. Starlight's
   theme script is removed, so `<html>` keeps the `data-theme="dark"`
   Starlight writes in the HTML, from first paint and without
@@ -500,6 +508,11 @@ PNGs do not.
   `--space-5` drift and the mobile shooting stars; at md and up the desktop
   counts, every 4th, `--space-7` and the desktop shooting stars. It clips to the
   page and never scrolls it horizontally.
+- Header: one line at all sizes. Below md, the site title on the left
+  and the search icon on the right, as in Starlight. At md and up, the
+  right group fills the space after the title and packs to the end: the
+  search box is Starlight's own width (up to 22rem) and shrinks only
+  when the row is too narrow, e.g. at 800 px.
 - Language select: below md it sits in Starlight's mobile menu footer at
   the start (left) edge, at Starlight's own width; at md and up it sits in
   the header at the end (right) edge.
