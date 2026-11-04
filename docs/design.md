@@ -22,6 +22,8 @@ Visual rules for the site in `site/`. The tokens below mirror
 | `--color-accent-bg` | `color-mix(in srgb, var(--color-accent) 15%, var(--color-bg))` | Accent-low surfaces, e.g. selected sidebar item |
 | `--color-accent-shadow` | `color-mix(in srgb, var(--color-accent) 35%, transparent)` | Soft shadow of the primary hero action on hover and focus |
 | `--color-accent-border` | `color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline))` | Border of a loop flow stage on hover, following the theme's accent |
+| `--color-star-glow` | `color-mix(in srgb, var(--color-accent) 60%, transparent)` | Glow of the mobile starfield shooting stars |
+| `--gradient-star-trail` | `linear-gradient(to right, transparent, var(--color-accent))` | Starfield shooting-star trail, transparent to accent with the bright end leading |
 
 ### Typography
 
@@ -80,6 +82,16 @@ created.
 | `--focus-ring-width` | 2px | Focus outline width |
 | `--size-dot` | 0.3125rem (5 px) | Loop flow connector dot and loop terminal title bar dot diameter |
 | `--size-select` | 6.25em | Language select width below md, equal to Starlight's theme select width |
+| `--size-star-far` | 0.0625rem (1 px) | Diameter of a far starfield star |
+| `--size-star-mid` | 0.125rem (2 px) | Diameter of a mid starfield star |
+| `--size-star-near` | 0.1875rem (3 px) | Diameter of a near starfield star |
+| `--size-trail-length-desktop` | 8.75rem (140 px) | Starfield shooting-star trail length, md and up |
+| `--size-trail-width-desktop` | 0.0625rem (1 px) | Starfield shooting-star trail width, md and up |
+| `--size-trail-length-mobile` | 8.125rem (130 px) | Starfield shooting-star trail length below md |
+| `--size-trail-width-mobile` | 0.125rem (2 px) | Starfield shooting-star trail width below md |
+| `--size-trail-glow-mobile` | 0.375rem (6 px) | Blur of the starfield shooting-star glow below md |
+| `--size-shoot-travel-desktop` | 30rem (480 px) | Distance a starfield shooting star travels, md and up |
+| `--size-shoot-travel-mobile` | 20rem (320 px) | Distance a starfield shooting star travels below md |
 
 ### Motion
 
@@ -102,11 +114,78 @@ created.
 | `--duration-run-stage-min` | 0.7s | Shortest spinner time of one loop terminal stage |
 | `--duration-run-stage-max` | 1.4s | Longest spinner time of one loop terminal stage |
 | `--duration-run-pause` | 2.6s | Pause after the final line before the loop terminal repeats |
+| `--duration-twinkle` | 5s | One twinkle cycle of a mid or near starfield star |
+| `--duration-star-delay-max` | 5s | Longest twinkle delay of a starfield star |
+| `--duration-drift-far` | 60s | One way of the far starfield layer drift |
+| `--duration-drift-mid` | 40s | One way of the mid starfield layer drift |
+| `--duration-drift-near` | 26s | One way of the near starfield layer drift |
+| `--duration-shoot-desktop` | 35s | Cycle of one starfield shooting star, md and up |
+| `--duration-shoot-mobile` | 15s | Cycle of one starfield shooting star below md |
+| `--duration-shoot-1-desktop` | 2s | Start delay of starfield shooting star 1, md and up |
+| `--duration-shoot-2-desktop` | 9s | Start delay of starfield shooting star 2, md and up |
+| `--duration-shoot-3-desktop` | 16s | Start delay of starfield shooting star 3, md and up |
+| `--duration-shoot-4-desktop` | 23s | Start delay of starfield shooting star 4, md and up |
+| `--duration-shoot-5-desktop` | 30s | Start delay of starfield shooting star 5, md and up |
+| `--duration-shoot-1-mobile` | 1s | Start delay of starfield shooting star 1, below md |
+| `--duration-shoot-2-mobile` | 4s | Start delay of starfield shooting star 2, below md |
+| `--duration-shoot-3-mobile` | 7s | Start delay of starfield shooting star 3, below md |
+| `--duration-shoot-4-mobile` | 10s | Start delay of starfield shooting star 4, below md |
+| `--duration-shoot-5-mobile` | 13s | Start delay of starfield shooting star 5, below md |
 | `--rotate-open` | 0.5turn | Rotation of the open loop flow chevron |
+| `--rotate-shoot-1-desktop` | 28deg | Angle of starfield shooting star 1, md and up |
+| `--rotate-shoot-2-desktop` | 18deg | Angle of starfield shooting star 2, md and up |
+| `--rotate-shoot-3-desktop` | -14deg | Angle of starfield shooting star 3, md and up |
+| `--rotate-shoot-4-desktop` | 30deg | Angle of starfield shooting star 4, md and up |
+| `--rotate-shoot-5-desktop` | 20deg | Angle of starfield shooting star 5, md and up |
+| `--rotate-shoot-1-mobile` | 22deg | Angle of starfield shooting star 1, below md |
+| `--rotate-shoot-2-mobile` | 14deg | Angle of starfield shooting star 2, below md |
+| `--rotate-shoot-3-mobile` | 26deg | Angle of starfield shooting star 3, below md |
+| `--rotate-shoot-4-mobile` | -10deg | Angle of starfield shooting star 4, below md |
+| `--rotate-shoot-5-mobile` | 20deg | Angle of starfield shooting star 5, below md |
 
 Every animation is declared inside
 `@media (prefers-reduced-motion: no-preference)`; under `reduce` the
-element shows its static state.
+element shows its static state. The only exception is the home
+starfield: by owner decision it keeps animating under `reduce`. Every
+other component follows the rule.
+
+### Opacity
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--opacity-star-far-min` | 0.15 | Lowest opacity of a far starfield star |
+| `--opacity-star-far-max` | 0.35 | Highest opacity of a far starfield star |
+| `--opacity-star-mid-min` | 0.3 | Lowest opacity of a mid starfield star |
+| `--opacity-star-mid-max` | 0.6 | Highest opacity of a mid starfield star |
+| `--opacity-star-near-min` | 0.6 | Lowest opacity of a near starfield star |
+| `--opacity-star-near-max` | 0.9 | Highest opacity of a near starfield star |
+| `--opacity-twinkle-max` | 0.9 | Bright end of the starfield twinkle |
+| `--opacity-twinkle-min` | 0.3 | Dim end of the starfield twinkle |
+
+### Positions
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--position-shoot-1-x-desktop` | 66.7% | Start x (% of width) of starfield shooting star 1, desktop |
+| `--position-shoot-1-y-desktop` | 3.75rem | Start y (from the top) of starfield shooting star 1, desktop |
+| `--position-shoot-2-x-desktop` | 10% | Start x (% of width) of starfield shooting star 2, desktop |
+| `--position-shoot-2-y-desktop` | 2.5rem | Start y (from the top) of starfield shooting star 2, desktop |
+| `--position-shoot-3-x-desktop` | 46.7% | Start x (% of width) of starfield shooting star 3, desktop |
+| `--position-shoot-3-y-desktop` | 35rem | Start y (from the top) of starfield shooting star 3, desktop |
+| `--position-shoot-4-x-desktop` | 78.7% | Start x (% of width) of starfield shooting star 4, desktop |
+| `--position-shoot-4-y-desktop` | 56.25rem | Start y (from the top) of starfield shooting star 4, desktop |
+| `--position-shoot-5-x-desktop` | 17.3% | Start x (% of width) of starfield shooting star 5, desktop |
+| `--position-shoot-5-y-desktop` | 78.125rem | Start y (from the top) of starfield shooting star 5, desktop |
+| `--position-shoot-1-x-mobile` | 14.3% | Start x (% of width) of starfield shooting star 1, mobile |
+| `--position-shoot-1-y-mobile` | 1.875rem | Start y (from the top) of starfield shooting star 1, mobile |
+| `--position-shoot-2-x-mobile` | 42.9% | Start x (% of width) of starfield shooting star 2, mobile |
+| `--position-shoot-2-y-mobile` | 20.625rem | Start y (from the top) of starfield shooting star 2, mobile |
+| `--position-shoot-3-x-mobile` | 9.5% | Start x (% of width) of starfield shooting star 3, mobile |
+| `--position-shoot-3-y-mobile` | 32.5rem | Start y (from the top) of starfield shooting star 3, mobile |
+| `--position-shoot-4-x-mobile` | 47.6% | Start x (% of width) of starfield shooting star 4, mobile |
+| `--position-shoot-4-y-mobile` | 56.25rem | Start y (from the top) of starfield shooting star 4, mobile |
+| `--position-shoot-5-x-mobile` | 11.9% | Start x (% of width) of starfield shooting star 5, mobile |
+| `--position-shoot-5-y-mobile` | 78.125rem | Start y (from the top) of starfield shooting star 5, mobile |
 
 ### Light theme
 
@@ -255,6 +334,45 @@ motion on stops the run at once in the final state, and turning it off
 starts the run again from the beginning. Use it only for the home's run;
 for other commands and transcripts use the terminal block.
 
+### Starfield
+
+`site/src/components/Starfield.astro`, imported in both `index.mdx` files
+and placed as `<Starfield />` after `<LoopTerminal />`. It must stay last
+so it adds no margin to its siblings. It shows in the dark theme only,
+behind the whole main pane from below the header to the bottom, and
+scrolls with the content. The header and the loop terminal stay opaque
+over it. It is CSS only, so it works without JavaScript. The stars come
+from an LCG with seed 42, reset on every render, that emits position,
+opacity and delay fractions; every design value lives in CSS tokens.
+Three layers, with counts desktop/mobile: far 200/90 stars of
+`--size-star-far`, opacity `--opacity-star-far-min` to
+`--opacity-star-far-max`; mid 80/36 of `--size-star-mid`, opacity
+`--opacity-star-mid-*`; near 20/10 of `--size-star-near`, opacity
+`--opacity-star-near-*`. Stars are in the text color; every 4th near star
+(every 3rd below md) is in the accent. Mid and near stars twinkle over
+`--duration-twinkle` between `--opacity-twinkle-max` and
+`--opacity-twinkle-min`, with a delay up to `--duration-star-delay-max`;
+the twinkle multiplies with the star's own opacity. Each layer is wider
+than the page by the drift and drifts sideways: `--space-7` at md and up,
+`--space-5` below, over `--duration-drift-far` (alternate),
+`--duration-drift-mid` (alternate-reverse) and `--duration-drift-near`
+(alternate). Five shooting stars per breakpoint, with a trail of
+`--gradient-star-trail` sized by the `--size-trail-*` tokens (rounded with
+a `--color-star-glow` glow below md only), travelling `--size-shoot-travel-*`
+along their `--rotate-shoot-*` angle from the `--position-shoot-*` start.
+They share one cycle (`--duration-shoot-desktop` or
+`--duration-shoot-mobile`) with staggered delays, so one shows at a time.
+Accessibility: `aria-hidden`, `pointer-events: none`, no focusable element
+and no text. Reduced motion: it keeps animating (owner exception). Use it
+only on the home; do not add it to other pages.
+
+Starlight coupling: the component sets `position: relative` on Starlight's
+own `.main-pane` (through `:global(.main-pane:has(.starfield))`), and its
+`z-index: -1` relies on `.main-pane` having `isolation: isolate` (from
+Starlight's `TwoColumnContent.astro`). If a Starlight upgrade drops that
+isolation, the starfield would hide behind the page background; check it
+after upgrading Starlight.
+
 ### Locales and translations
 
 - The locales are declared once in `site/src/locales.mjs`: Spanish `root`
@@ -340,6 +458,7 @@ for other commands and transcripts use the terminal block.
   `--size-select` to equal it; both sit where Starlight places them (the
   mobile menu).
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
+- Starfield: below md the mobile counts, every 3rd near star in accent, `--space-5` drift and the mobile shooting stars; at md and up the desktop counts, every 4th, `--space-7` and the desktop shooting stars. It clips to the page and never scrolls it horizontally.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
 ## 5. Accessibility minimums

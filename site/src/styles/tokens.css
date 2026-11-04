@@ -12,6 +12,8 @@
 	--color-accent-bg: color-mix(in srgb, var(--color-accent) 15%, var(--color-bg));
 	--color-accent-shadow: color-mix(in srgb, var(--color-accent) 35%, transparent);
 	--color-accent-border: color-mix(in srgb, var(--sl-color-text-accent) 45%, var(--sl-color-hairline));
+	--color-star-glow: color-mix(in srgb, var(--color-accent) 60%, transparent);
+	--gradient-star-trail: linear-gradient(to right, transparent, var(--color-accent));
 
 	--font-heading: 'Space Grotesk', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
@@ -35,6 +37,25 @@
 	--focus-ring-width: 2px;
 	--size-dot: 0.3125rem;
 	--size-select: 6.25em;
+	--size-star-far: 0.0625rem;
+	--size-star-mid: 0.125rem;
+	--size-star-near: 0.1875rem;
+	--size-trail-length-desktop: 8.75rem;
+	--size-trail-width-desktop: 0.0625rem;
+	--size-trail-length-mobile: 8.125rem;
+	--size-trail-width-mobile: 0.125rem;
+	--size-trail-glow-mobile: 0.375rem;
+	--size-shoot-travel-desktop: 30rem;
+	--size-shoot-travel-mobile: 20rem;
+
+	--opacity-star-far-min: 0.15;
+	--opacity-star-far-max: 0.35;
+	--opacity-star-mid-min: 0.3;
+	--opacity-star-mid-max: 0.6;
+	--opacity-star-near-min: 0.6;
+	--opacity-star-near-max: 0.9;
+	--opacity-twinkle-max: 0.9;
+	--opacity-twinkle-min: 0.3;
 
 	--duration-flow: 1.2s;
 	--duration-fade: 0.2s;
@@ -53,8 +74,56 @@
 	--duration-run-stage-min: 0.7s;
 	--duration-run-stage-max: 1.4s;
 	--duration-run-pause: 2.6s;
+	--duration-twinkle: 5s;
+	--duration-star-delay-max: 5s;
+	--duration-drift-far: 60s;
+	--duration-drift-mid: 40s;
+	--duration-drift-near: 26s;
+	--duration-shoot-desktop: 35s;
+	--duration-shoot-mobile: 15s;
+	--duration-shoot-1-desktop: 2s;
+	--duration-shoot-2-desktop: 9s;
+	--duration-shoot-3-desktop: 16s;
+	--duration-shoot-4-desktop: 23s;
+	--duration-shoot-5-desktop: 30s;
+	--duration-shoot-1-mobile: 1s;
+	--duration-shoot-2-mobile: 4s;
+	--duration-shoot-3-mobile: 7s;
+	--duration-shoot-4-mobile: 10s;
+	--duration-shoot-5-mobile: 13s;
 
 	--rotate-open: 0.5turn;
+	--rotate-shoot-1-desktop: 28deg;
+	--rotate-shoot-2-desktop: 18deg;
+	--rotate-shoot-3-desktop: -14deg;
+	--rotate-shoot-4-desktop: 30deg;
+	--rotate-shoot-5-desktop: 20deg;
+	--rotate-shoot-1-mobile: 22deg;
+	--rotate-shoot-2-mobile: 14deg;
+	--rotate-shoot-3-mobile: 26deg;
+	--rotate-shoot-4-mobile: -10deg;
+	--rotate-shoot-5-mobile: 20deg;
+
+	--position-shoot-1-x-desktop: 66.7%;
+	--position-shoot-1-y-desktop: 3.75rem;
+	--position-shoot-2-x-desktop: 10%;
+	--position-shoot-2-y-desktop: 2.5rem;
+	--position-shoot-3-x-desktop: 46.7%;
+	--position-shoot-3-y-desktop: 35rem;
+	--position-shoot-4-x-desktop: 78.7%;
+	--position-shoot-4-y-desktop: 56.25rem;
+	--position-shoot-5-x-desktop: 17.3%;
+	--position-shoot-5-y-desktop: 78.125rem;
+	--position-shoot-1-x-mobile: 14.3%;
+	--position-shoot-1-y-mobile: 1.875rem;
+	--position-shoot-2-x-mobile: 42.9%;
+	--position-shoot-2-y-mobile: 20.625rem;
+	--position-shoot-3-x-mobile: 9.5%;
+	--position-shoot-3-y-mobile: 32.5rem;
+	--position-shoot-4-x-mobile: 47.6%;
+	--position-shoot-4-y-mobile: 56.25rem;
+	--position-shoot-5-x-mobile: 11.9%;
+	--position-shoot-5-y-mobile: 78.125rem;
 
 	--sl-font: var(--font-body);
 	--sl-font-mono: var(--font-mono);
