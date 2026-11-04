@@ -18,6 +18,7 @@ const group = (key, directory) => ({
 });
 
 export default defineConfig({
+	site: 'https://bitacora-agentica.vercel.app',
 	integrations: [
 		starlight({
 			title: translated('site.title'),
