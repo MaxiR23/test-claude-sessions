@@ -192,9 +192,10 @@ the tokens above, whatever the device preference or a stored
   `clamp()`, the two breakpoints inside `@media`, percentage offsets as
   keyframe selectors inside `@keyframes`, and unitless `opacity`
   values.
-- Only exception: `site/public/favicon.svg`, a static file that cannot read
-  CSS custom properties. It repeats `--color-accent` and `--color-bg` as
-  literals, mirrored from the tokens.
+- Only exceptions: static files that cannot read CSS custom properties.
+  `site/public/favicon.svg` repeats `--color-accent` and `--color-bg` as
+  literals, mirrored from the tokens. The PNGs in `site/public/og/` carry the
+  design's values as pixels (see Share image).
 - Reuse before creating: check Starlight's built-in components first, then
   `site/src/components/`. A new component or token needs a role no existing
   one covers.
@@ -391,6 +392,25 @@ Starlight's `TwoColumnContent.astro`). If a Starlight upgrade drops that
 isolation, the starfield would hide behind the page background; check it
 after upgrading Starlight.
 
+### Share image
+
+`site/public/og/es.png` and `site/public/og/en.png`: two static PNGs of
+1200x630, one per locale, used by every page of that locale, including the
+404 for Spanish. There is no image per page. Each shows the static starfield,
+a frozen shooting star, the site handle, the home eyebrow, the home hero title,
+the site URL and the home status of its locale.
+
+`site/src/components/Head.astro` adds the tags once for every page:
+`og:image` and `twitter:image` with the absolute URL of the image of the page's
+locale, `og:image:width` and `og:image:height`, and `og:image:alt` with the
+hero title read from the home page of that locale. The 1200 and 630 are
+literals because they describe the file, not the layout.
+
+Nothing generates the images: no script and no build step. Render both PNGs
+again when the home eyebrow, hero title or status changes, in either locale,
+or when the design changes. The alt follows the hero title on its own; the
+PNGs do not.
+
 ### Locales and translations
 
 - The locales are declared once in `site/src/locales.mjs`: Spanish `root`
@@ -445,6 +465,7 @@ after upgrading Starlight.
     with the same primary language. Anything else stays Spanish.
   - A mismatch redirects with `location.replace` to the same slug. Without
     JavaScript there is no redirect.
+  - It also adds the share image tags (see Share image).
 - Language select: `site/src/components/LanguageSelect.astro`. Starlight's
   select, with the choice stored on change. Without JavaScript it is
   replaced by a `<noscript>` link to the other locale with the `translate`

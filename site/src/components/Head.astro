@@ -1,12 +1,23 @@
 ---
 import Default from '@astrojs/starlight/components/Head.astro';
+import { getEntry } from 'astro:content';
 import { locales, localeBase } from '../locales.mjs';
 
 const sites = Object.entries(locales).map(([key, { lang }]) => ({ base: localeBase(key), lang }));
 const storageKey = 'site-locale';
+const { lang, locale } = Astro.locals.starlightRoute;
+const shareImage = new URL(`/og/${lang}.png`, Astro.site).href;
+// The root home has the entry id `index`; a locale's home has the locale as its id.
+const home = await getEntry('docs', locale ?? 'index');
+const shareImageAlt = home!.data.hero!.title;
 ---
 
 <Default />
+<meta property="og:image" content={shareImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={shareImageAlt} />
+<meta name="twitter:image" content={shareImage} />
 <script is:inline define:vars={{ sites, storageKey }}>
 	(() => {
 		const localeOf = (pathname) =>
