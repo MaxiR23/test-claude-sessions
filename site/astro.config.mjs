@@ -39,6 +39,8 @@ export default defineConfig({
 				Hero: './src/components/Hero.astro',
 				SiteTitle: './src/components/SiteTitle.astro',
 				Footer: './src/components/Footer.astro',
+				ThemeProvider: './src/components/ThemeProvider.astro',
+				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			sidebar: [
 				group('sidebar.setup', 'configuracion'),
