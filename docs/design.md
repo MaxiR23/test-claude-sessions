@@ -458,7 +458,10 @@ after upgrading Starlight.
   `--size-select` to equal it; both sit where Starlight places them (the
   mobile menu).
 - Back-to-top button: bottom right with `--space-4` inset at all sizes.
-- Starfield: below md the mobile counts, every 3rd near star in accent, `--space-5` drift and the mobile shooting stars; at md and up the desktop counts, every 4th, `--space-7` and the desktop shooting stars. It clips to the page and never scrolls it horizontally.
+- Starfield: below md the mobile counts, every 3rd near star in accent,
+  `--space-5` drift and the mobile shooting stars; at md and up the desktop
+  counts, every 4th, `--space-7` and the desktop shooting stars. It clips to the
+  page and never scrolls it horizontally.
 - Relative units only (`rem`, `%`, `ch`, `clamp()`).
 
 ## 5. Accessibility minimums
