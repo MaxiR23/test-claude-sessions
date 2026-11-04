@@ -200,6 +200,25 @@ theme; fonts apply to both.
   one covers.
 - Every change to `site/src/styles/tokens.css` is mirrored here, and vice
   versa.
+- Inline scripts run only because `site/vercel.json` allows each one by
+  its sha256 hash in the `Content-Security-Policy` header. Adding or
+  editing an `is:inline` script (Head, Footer, loop flow, loop terminal),
+  or upgrading Astro or Starlight, means recomputing the hashes from
+  `site/dist` and updating that header. Editing `site/src/locales.mjs`
+  (adding a locale or changing a lang) changes the language-detection
+  script in `Head.astro` through `define:vars`, so its hash in
+  `site/vercel.json` must be recomputed too. Everything loads from the
+  site's own origin: no external scripts, styles or fonts.
+- Astro's built-in CSP is not used: it leaves `is:inline` scripts
+  unhashed, blocks the style attributes the pages use, and as a meta tag
+  it cannot carry `frame-ancestors`. The header in `site/vercel.json`
+  is written by hand instead.
+- The policy needs three loosenings, and no more:
+  - `'wasm-unsafe-eval'` in `script-src`, for Pagefind search.
+  - `'unsafe-inline'` in `style-src`, for the style attributes of the
+    Starlight icons and the starfield.
+  - `data:` in `font-src` and `img-src`, for the inlined font subsets
+    and SVG icons.
 
 ## 3. Components
 
