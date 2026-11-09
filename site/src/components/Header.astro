@@ -1,0 +1,64 @@
+---
+// Replaces Starlight 0.42.4 Header.astro: same row and styles, except that the
+// search sits in the right group, immediately before the language select.
+// Below md only the search icon shows there, as in Starlight.
+import Search from '@astrojs/starlight/components/Search.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import LanguageSelect from './LanguageSelect.astro';
+import SiteTitle from './SiteTitle.astro';
+---
+
+<div class="header">
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<div class="sl-flex print:hidden right-group">
+		<div class="sl-hidden md:sl-flex social-icons">
+			<SocialIcons />
+		</div>
+		<Search />
+		<div class="sl-hidden md:sl-flex language">
+			<LanguageSelect />
+		</div>
+	</div>
+</div>
+
+<style>
+	@layer starlight.core {
+		.header {
+			display: flex;
+			gap: var(--sl-nav-gap);
+			justify-content: space-between;
+			align-items: center;
+			height: 100%;
+		}
+
+		.title-wrapper {
+			overflow: clip;
+			padding: var(--space-1);
+			margin: calc(-1 * var(--space-1));
+			min-width: 0;
+		}
+
+		.right-group,
+		.social-icons {
+			gap: var(--space-4);
+			align-items: center;
+		}
+		.language {
+			align-items: center;
+		}
+		.social-icons::after {
+			content: '';
+			height: var(--space-6);
+			border-inline-end: var(--border);
+		}
+
+		@media (min-width: 50rem) {
+			.right-group {
+				flex-grow: 1;
+				justify-content: flex-end;
+			}
+		}
+	}
+</style>
